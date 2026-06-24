@@ -635,6 +635,35 @@
             color: #2c3e50;
         }
 
+        .lobby-type-btn.active-type {
+            outline: 3px solid #2c3e50;
+            outline-offset: 2px;
+        }
+
+        .public-lobby-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .public-lobby-item button {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 5px;
+            border: none;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .public-lobby-item button:hover { background: #2980b9; }
+
         .game-code {
             background: white;
             padding: 10px;
@@ -1159,11 +1188,20 @@
         <!-- Online Controls -->
         <div class="online-controls" id="onlineControls" style="display: none; margin-top: 15px;">
             <h3>משחק מקוון</h3>
-            <div class="input-group" id="onlineCreateSection">
-                <button class="btn btn-primary" onclick="createOnlineGame()">צור לובי חדש</button>
+
+            <!-- Create lobby section -->
+            <div id="onlineCreateSection" style="margin-bottom:12px;">
+                <label style="font-weight:600;display:block;margin-bottom:6px;font-size:14px;">סוג לובי:</label>
+                <div style="display:flex;gap:6px;margin-bottom:10px;">
+                    <button id="lobbyTypePublic" class="btn btn-primary lobby-type-btn active-type" onclick="setLobbyType('public')" style="flex:1;padding:11px 6px;font-size:13px;">🌐 פתוח לכולם</button>
+                    <button id="lobbyTypePrivate" class="btn btn-secondary lobby-type-btn" onclick="setLobbyType('private')" style="flex:1;padding:11px 6px;font-size:13px;">🔒 פרטי (קוד בלבד)</button>
+                </div>
+                <button class="btn btn-primary" onclick="createOnlineGame()" style="width:100%;padding:13px;font-size:16px;border-radius:7px;">➕ צור לובי חדש</button>
             </div>
+
+            <!-- Game code display (host view after creating) -->
             <div id="gameCodeDisplay" style="display: none;">
-                <div>קוד הלובי:</div>
+                <div style="font-size:13px;color:#7f8c8d;text-align:center;margin-bottom:4px;">קוד הלובי שלך:</div>
                 <div class="game-code" id="gameCode"></div>
                 <div style="font-size: 12px; color: #7f8c8d; text-align: center;">שתף את הקוד עם השחקן השני</div>
                 <!-- Pending join requests shown to host -->
@@ -1172,10 +1210,25 @@
                     <div id="pendingRequestsList"></div>
                 </div>
             </div>
-            <div class="input-group" id="onlineJoinSection">
-                <input type="text" id="joinGameInput" placeholder="הכנס קוד לובי" maxlength="6">
-                <button class="btn btn-primary" onclick="requestJoinGame()">בקש להצטרף</button>
+
+            <!-- Public lobbies list -->
+            <div id="publicLobbiesSection" style="margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-weight:600;font-size:14px;">🌐 לובי פתוחים:</span>
+                    <button onclick="loadPublicLobbies()" style="background:none;border:none;cursor:pointer;font-size:20px;line-height:1;" title="רענן">🔄</button>
+                </div>
+                <div id="publicLobbiesList" style="font-size:13px;color:#7f8c8d;">טוען...</div>
             </div>
+
+            <!-- Join by code section -->
+            <div id="onlineJoinSection">
+                <div style="font-size:13px;color:#7f8c8d;margin-bottom:6px;text-align:center;">— או הצטרף עם קוד —</div>
+                <div style="display:flex;gap:6px;">
+                    <input type="text" id="joinGameInput" placeholder="הכנס קוד לובי" maxlength="6" style="flex:1;padding:10px;font-size:15px;border:1px solid #ccc;border-radius:6px;">
+                    <button class="btn btn-primary" onclick="requestJoinGame()" style="padding:10px 16px;font-size:15px;flex-shrink:0;">הצטרף</button>
+                </div>
+            </div>
+
             <div id="playerIndicator" style="display: none;"></div>
             <div id="waitingMessage" style="display: none;" class="waiting-message">
                 ממתין לשחקן שני...
@@ -3190,6 +3243,49 @@
         initBoard();
 
         // Online Game Functions
+        let pendingRequestsCache = {};
+        let selectedLobbyType = 'public';
+
+        function setLobbyType(type) {
+            selectedLobbyType = type;
+            document.getElementById('lobbyTypePublic').classList.toggle('active-type', type === 'public');
+            document.getElementById('lobbyTypePublic').classList.toggle('btn-primary', type === 'public');
+            document.getElementById('lobbyTypePublic').classList.toggle('btn-secondary', type !== 'public');
+            document.getElementById('lobbyTypePrivate').classList.toggle('active-type', type === 'private');
+            document.getElementById('lobbyTypePrivate').classList.toggle('btn-primary', type === 'private');
+            document.getElementById('lobbyTypePrivate').classList.toggle('btn-secondary', type !== 'private');
+        }
+
+        function loadPublicLobbies() {
+            const listEl = document.getElementById('publicLobbiesList');
+            if (!listEl) return;
+            if (!database) { listEl.textContent = 'Firebase לא זמין.'; return; }
+            listEl.textContent = 'טוען...';
+            database.ref('games').orderByChild('status').equalTo('waiting').limitToLast(20).once('value').then(snap => {
+                const all = snap.val() || {};
+                const open = Object.entries(all).filter(([, g]) => g.isPublic && g.players && g.players.white);
+                if (open.length === 0) {
+                    listEl.innerHTML = '<div style="color:#999;font-style:italic;padding:6px 0;">אין לובי פתוחים כרגע. צור אחד!</div>';
+                    return;
+                }
+                listEl.innerHTML = open.map(([code, g]) => {
+                    const hostName = g.players.white.name || 'שחקן';
+                    const hostPhoto = g.players.white.photo ? `<img src="${g.players.white.photo}" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'">` : '';
+                    return `<div class="public-lobby-item">
+                        ${hostPhoto}
+                        <span style="flex:1;">${hostName}</span>
+                        <span style="color:#7f8c8d;font-size:12px;">${code}</span>
+                        <button onclick="joinPublicLobby('${code}')">הצטרף ▶</button>
+                    </div>`;
+                }).join('');
+            }).catch(() => { listEl.textContent = 'שגיאה בטעינת לובי.'; });
+        }
+
+        function joinPublicLobby(code) {
+            document.getElementById('joinGameInput').value = code;
+            requestJoinGame();
+        }
+
         function setGameMode(mode, btnEl) {
             if (mode === 'online' && !isFirebaseAvailable) {
                 alert('המשחק המקוון אינו זמין כרגע. אנא שחק במצב מקומי.');
@@ -3204,6 +3300,7 @@
 
             document.getElementById('onlineControls').style.display = mode === 'online' ? 'block' : 'none';
             document.getElementById('computerControls').style.display = mode === 'computer' ? 'flex' : 'none';
+            if (mode === 'online') loadPublicLobbies();
 
             if (mode !== 'online') {
                 if (gameRef) { gameRef.off(); gameRef = null; }
@@ -3241,6 +3338,7 @@
                 },
                 requests: {},
                 status: 'waiting',
+                isPublic: selectedLobbyType === 'public',
                 createdAt: Date.now()
             };
 
@@ -3249,6 +3347,7 @@
                 document.getElementById('gameCode').textContent = gameCode;
                 document.getElementById('onlineJoinSection').style.display = 'none';
                 document.getElementById('onlineCreateSection').style.display = 'none';
+                document.getElementById('publicLobbiesSection').style.display = 'none';
                 document.getElementById('playerIndicator').style.display = 'block';
                 document.getElementById('playerIndicator').className = 'player-indicator player-white';
                 document.getElementById('playerIndicator').textContent = `אתה המארח — לבן ♔`;
@@ -3277,23 +3376,25 @@
         }
 
         function renderPendingRequests(requests, gameCode) {
+            pendingRequestsCache = requests;
             const container = document.getElementById('pendingRequests');
             const list = document.getElementById('pendingRequestsList');
             const pending = Object.entries(requests).filter(([, r]) => r.status === 'pending');
             if (pending.length === 0) { container.style.display = 'none'; return; }
             container.style.display = 'block';
             list.innerHTML = pending.map(([uid, r]) => `
-                <div style="display:flex;align-items:center;gap:8px;padding:6px;background:#f8f9fa;border-radius:6px;margin-bottom:4px;">
-                    ${r.photo ? `<img src="${r.photo}" style="width:24px;height:24px;border-radius:50%;" onerror="this.style.display='none'">` : ''}
-                    <span style="flex:1;">${r.name || 'אורח'}</span>
-                    <button class="btn btn-primary" style="padding:4px 10px;font-size:12px;" onclick="approveJoinRequest('${gameCode}','${uid}',${JSON.stringify(r.name)},${JSON.stringify(r.photo)})">✅ אשר</button>
-                    <button class="btn btn-danger" style="padding:4px 10px;font-size:12px;" onclick="rejectJoinRequest('${gameCode}','${uid}')">❌ דחה</button>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f8f9fa;border-radius:6px;margin-bottom:6px;">
+                    ${r.photo ? `<img src="${r.photo}" style="width:28px;height:28px;border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'">` : ''}
+                    <span style="flex:1;font-size:14px;">${r.name || 'אורח'}</span>
+                    <button class="btn btn-primary" style="padding:7px 14px;font-size:13px;" onclick="approveJoinRequest('${gameCode}','${uid}')">✅ אשר</button>
+                    <button class="btn btn-danger" style="padding:7px 14px;font-size:13px;" onclick="rejectJoinRequest('${gameCode}','${uid}')">❌ דחה</button>
                 </div>`).join('');
         }
 
-        function approveJoinRequest(gameCode, uid, name, photo) {
+        function approveJoinRequest(gameCode, uid) {
+            const req = pendingRequestsCache[uid] || {};
             database.ref('games/' + gameCode).update({
-                'players/black': { uid, name: name || 'שחקן שחור', photo: photo || '' },
+                'players/black': { uid, name: req.name || 'שחקן שחור', photo: req.photo || '' },
                 'status': 'active',
                 [`requests/${uid}/status`]: 'approved'
             });
@@ -3339,6 +3440,8 @@
                 }).then(() => {
                     document.getElementById('approvalWaiting').style.display = 'block';
                     document.getElementById('onlineCreateSection').style.display = 'none';
+                    document.getElementById('onlineJoinSection').style.display = 'none';
+                    document.getElementById('publicLobbiesSection').style.display = 'none';
 
                     // Watch for approval/rejection
                     const reqRef = database.ref(`games/${gameCode}/requests/${currentUser.uid}/status`);
@@ -3361,6 +3464,9 @@
                             reqRef.off();
                             document.getElementById('approvalWaiting').style.display = 'none';
                             document.getElementById('onlineCreateSection').style.display = 'block';
+                            document.getElementById('onlineJoinSection').style.display = 'block';
+                            document.getElementById('publicLobbiesSection').style.display = 'block';
+                            loadPublicLobbies();
                             alert('הבקשה שלך נדחתה על ידי המארח.');
                             onlineGameId = null;
                             playerColor = null;
