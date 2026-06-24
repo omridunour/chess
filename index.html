@@ -548,28 +548,9 @@
             .side-panel { border-radius: 0; box-shadow: none; border-top: 1px solid #ecf0f1; }
         }
 
-        /* ===== TABLET ONLY (700px-1200px) — 2-column: board on right, panel on left ===== */
-        @media (min-width: 700px) and (max-width: 1200px) {
-            body { height: 100dvh; overflow: hidden; }
-            .container {
-                grid-template-areas: "panel board";
-                grid-template-columns: 260px 1fr;
-                height: auto;
-                overflow: hidden;
-            }
-            .left-panels { grid-area: panel; order: unset; height: 100%; overflow-y: auto; border-left: 1px solid #ecf0f1; }
-            .right-board { grid-area: board; order: unset; height: 100%; }
-            .mobile-tabs { display: none !important; }
-            .mobile-panel { display: block !important; }
-            .board-container { height: 100%; padding: 20px 8px 12px; justify-content: flex-start; align-items: center; }
-            .board-with-coords { width: min(100%, calc(100dvh - 175px)); max-width: 100%; }
-            .coach-panel { padding: 14px 16px; }
-            .side-panel { padding: 14px 16px; }
-        }
-
-        /* ===== MOBILE ONLY (<700px) — 2-column compact layout ===== */
+        /* ===== MOBILE ONLY (<700px) — single column, tighter sizing ===== */
         @media (max-width: 700px) {
-            body { display: flex; height: 100dvh; overflow: hidden; }
+            body { display: block; }
 
             .header { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
             .header-row .mode-btn { font-size: 11px; padding: 7px 2px; }
@@ -581,41 +562,29 @@
             .btn-profile { font-size: 12px; padding: 7px 10px; }
             .btn-signout { font-size: 12px; padding: 7px 10px; }
 
-            /* 2-column: narrow panel alongside board */
-            .container {
-                grid-template-areas: "panel board";
-                grid-template-columns: 130px 1fr;
-                height: auto; overflow: hidden;
-            }
-            .left-panels { grid-area: panel; order: unset; height: 100%; overflow-y: auto; border-left: 1px solid #ecf0f1; }
-            .right-board { grid-area: board; order: unset; height: 100%; }
-            .mobile-tabs { display: none !important; }
-            .mobile-panel { display: block !important; }
+            .board-container { padding: 6px 0 4px; box-shadow: none; border-radius: 0; }
+            .square { font-size: clamp(24px, 10vw, 52px); }
+            .turn-indicator { font-size: 14px; padding: 7px 10px; margin-bottom: 8px; }
+            .status-message { font-size: 15px; padding: 10px; }
+            .coord-label { font-size: 10px; }
 
-            .board-container { height: 100%; padding: 8px 0 6px; box-shadow: none; border-radius: 0; justify-content: flex-start; align-items: center; }
-            .board-with-coords { width: min(100%, calc(100dvh - 150px)); }
-            .square { font-size: clamp(16px, 6.5vw, 28px); }
-            .turn-indicator { font-size: 12px; padding: 5px 8px; margin-bottom: 6px; }
-            .status-message { font-size: 13px; padding: 8px; }
-            .coord-label { font-size: 8px; }
-
-            /* Compact panel for 130px column */
-            .coach-panel { padding: 8px 6px; }
-            .coach-panel h3 { font-size: 12px; margin-bottom: 6px; }
-            .coach-message { font-size: 11px; padding: 6px; line-height: 1.4; }
-            .side-panel { padding: 8px 6px; }
-            .compact-section { padding: 6px; margin-bottom: 8px; }
-            .compact-section h3 { font-size: 11px; }
-            .threat-list li, .opportunity-list li { font-size: 11px; padding: 4px; }
-            .material-count { gap: 4px; flex-direction: column; }
-            .material-white, .material-black { padding: 5px 4px; font-size: 11px; }
-            .move-history { max-height: 120px; }
-            .move-item { font-size: 10px; padding: 4px 5px; }
-            .recommendations { max-height: 120px; }
-            .recommendation-item { font-size: 11px; padding: 5px; }
-            .online-controls { padding: 8px 6px; }
-            .game-code { font-size: 18px; }
-            .coord-label { font-size: 8px; }
+            .mobile-tab { font-size: 11px; min-width: 68px; padding: 10px 6px; }
+            .coach-panel { padding: 14px 12px; }
+            .coach-panel h3 { font-size: 15px; }
+            .coach-message { font-size: 13px; padding: 9px; }
+            .side-panel { padding: 14px 12px; }
+            .compact-section { padding: 10px; margin-bottom: 10px; }
+            .compact-section h3 { font-size: 13px; }
+            .threat-list li, .opportunity-list li { font-size: 13px; padding: 6px; }
+            .material-count { gap: 8px; }
+            .material-white, .material-black { padding: 8px; font-size: 13px; }
+            .move-history { max-height: 160px; }
+            .move-item { font-size: 12px; padding: 6px 9px; }
+            .recommendations { max-height: 180px; }
+            .recommendation-item { font-size: 13px; padding: 8px; }
+            .online-controls { padding: 10px 12px; }
+            .game-code { font-size: 22px; }
+            .coord-label { font-size: 10px; }
 
             .win-card { padding: 28px 20px; }
             .trophy-big { font-size: 70px; }
