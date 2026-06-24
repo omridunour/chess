@@ -548,6 +548,25 @@
             .side-panel { border-radius: 0; box-shadow: none; border-top: 1px solid #ecf0f1; }
         }
 
+        /* ===== TABLET ONLY (700px-1200px) — 2-column: board on right, panel on left ===== */
+        @media (min-width: 700px) and (max-width: 1200px) {
+            body { height: 100dvh; overflow: hidden; }
+            .container {
+                grid-template-areas: "panel board";
+                grid-template-columns: 260px 1fr;
+                height: auto;
+                overflow: hidden;
+            }
+            .left-panels { grid-area: panel; order: unset; height: 100%; overflow-y: auto; border-left: 1px solid #ecf0f1; }
+            .right-board { grid-area: board; order: unset; height: 100%; }
+            .mobile-tabs { display: none !important; }
+            .mobile-panel { display: block !important; }
+            .board-container { height: 100%; padding: 20px 8px 12px; justify-content: flex-start; align-items: center; }
+            .board-with-coords { width: min(100%, calc(100dvh - 175px)); max-width: 100%; }
+            .coach-panel { padding: 14px 16px; }
+            .side-panel { padding: 14px 16px; }
+        }
+
         /* ===== MOBILE ONLY (<700px) — tighter sizing on top of tablet rules ===== */
         @media (max-width: 700px) {
             body { display: block; }
