@@ -494,9 +494,26 @@
             background: #c0392b;
         }
 
+        /* Header row — transparent on desktop (children join parent flex), becomes real row on mobile */
+        .header-row { display: contents; }
+
         /* ===== RESPONSIVE — TABLET + MOBILE (<1200px) ===== */
         @media (max-width: 1200px) {
             body { height: auto; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) no-repeat fixed; }
+
+            /* Compact header — two rows of buttons, no title */
+            .header { padding: 6px 12px; }
+            .header h1 { display: none; }
+            .header-controls { flex-direction: column; gap: 6px; }
+            .header-row { display: flex; gap: 6px; width: 100%; align-items: stretch; }
+            .header-row .mode-btn { flex: 1; padding: 8px 4px; font-size: 12px; min-width: 0; }
+            .header-row .btn { flex: 1; padding: 9px 6px; font-size: 13px; }
+            .auth-section { gap: 6px; margin-right: 0; flex-shrink: 0; }
+            #authLoggedOut { display: flex; align-items: center; gap: 6px; }
+            .btn-google { padding: 7px 10px; font-size: 12px; }
+            .btn-google .btn-label { display: none; }
+            .btn-guest { padding: 7px 10px; font-size: 12px; }
+            .btn-google svg { width: 16px; height: 16px; }
 
             /* Single-column layout: board first, then tabs, then panel content */
             .container { grid-template-columns: 1fr; height: auto; }
@@ -504,7 +521,7 @@
             .mobile-tabs { order: 2; }
             .left-panels { order: 3; height: auto; overflow-y: visible; border-left: none; }
             .board-container { height: auto; padding: 8px 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
-            .board-with-coords { width: min(100%, calc(100dvh - 250px)); max-width: 100%; }
+            .board-with-coords { width: min(100%, calc(100dvh - 185px)); max-width: 100%; }
             .coach-panel { padding-left: 20px; padding-right: 20px; }
 
             /* Activate tab system */
@@ -535,14 +552,12 @@
         @media (max-width: 700px) {
             body { display: block; }
 
-            .header { padding: 10px 12px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-            .header h1 { font-size: 17px; margin-bottom: 8px; }
-            .header-controls { gap: 6px; justify-content: center; }
+            .header { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+            .header-row .mode-btn { font-size: 11px; padding: 7px 2px; }
+            .header-row .btn { font-size: 12px; padding: 8px 4px; }
+            .btn-google { padding: 6px 8px; font-size: 11px; }
+            .btn-guest { padding: 6px 8px; font-size: 11px; }
 
-            .btn { padding: 9px 11px; font-size: 12px; }
-            .mode-btn { padding: 8px 12px; font-size: 12px; }
-
-            .auth-section { width: 100%; }
             #authLoggedIn { flex-wrap: wrap; gap: 6px !important; justify-content: center; }
             .auth-user span { max-width: 80px; font-size: 12px; }
             .btn-profile { font-size: 12px; padding: 7px 10px; }
@@ -1138,48 +1153,51 @@
     <div class="header">
         <h1>♟️ משחק שח טקטי</h1>
         <div class="header-controls">
-            <!-- Auth Section -->
-            <div class="auth-section" id="authSection">
-                <div id="authLoggedOut">
-                    <button class="btn-google" onclick="signInWithGoogle()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        התחבר עם Google
-                    </button>
-                    <button class="btn-guest" onclick="signInAsGuest()">🎮 שחק כאורח</button>
-                </div>
-                <div id="authLoggedIn" style="display:none; align-items:center; gap:10px;">
-                    <div class="auth-user">
-                        <span class="auth-status-dot"></span>
-                        <img id="userPhoto" src="" alt="תמונת פרופיל" onerror="this.style.display='none'">
-                        <span id="userName">משתמש</span>
+            <div class="header-row">
+                <!-- Auth Section -->
+                <div class="auth-section" id="authSection">
+                    <div id="authLoggedOut">
+                        <button class="btn-google" onclick="signInWithGoogle()">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            <span class="btn-label">התחבר עם Google</span>
+                        </button>
+                        <button class="btn-guest" onclick="signInAsGuest()">🎮 <span class="btn-label">שחק </span>כאורח</button>
                     </div>
-                    <button class="btn-profile" id="profileBtn" onclick="openProfile()">🏆 הפרופיל שלי</button>
-                    <button class="btn-google" id="linkGoogleBtn" onclick="linkGoogleAccount()" style="display:none;font-size:12px;padding:7px 10px;">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        שמור חשבון
-                    </button>
-                    <button class="btn-signout" onclick="signOut()">התנתק</button>
+                    <div id="authLoggedIn" style="display:none; align-items:center; gap:10px;">
+                        <div class="auth-user">
+                            <span class="auth-status-dot"></span>
+                            <img id="userPhoto" src="" alt="תמונת פרופיל" onerror="this.style.display='none'">
+                            <span id="userName">משתמש</span>
+                        </div>
+                        <button class="btn-profile" id="profileBtn" onclick="openProfile()">🏆 <span class="btn-label">הפרופיל שלי</span></button>
+                        <button class="btn-google" id="linkGoogleBtn" onclick="linkGoogleAccount()" style="display:none;font-size:12px;padding:7px 10px;">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            שמור חשבון
+                        </button>
+                        <button class="btn-signout" onclick="signOut()">התנתק</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Mode Selector -->
-            <button class="mode-btn active" id="modeBtn-local" onclick="setGameMode('local', this)">🏠 מקומי</button>
-            <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 נגד מחשב</button>
-            <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
-            
-            <!-- Game Controls -->
-            <button class="btn btn-secondary" onclick="undoMove()">↶ בטל מהלך</button>
-            <button class="btn btn-danger" onclick="resetGame()">🔄 משחק חדש</button>
+                <!-- Mode Selector -->
+                <button class="mode-btn active" id="modeBtn-local" onclick="setGameMode('local', this)">🏠 מקומי</button>
+                <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 <span class="btn-label">נגד </span>מחשב</button>
+                <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
+            </div>
+            <div class="header-row">
+                <!-- Game Controls -->
+                <button class="btn btn-secondary" onclick="undoMove()">↶ בטל מהלך</button>
+                <button class="btn btn-danger" onclick="resetGame()">🔄 משחק חדש</button>
+            </div>
         </div>
 
         <!-- Computer Controls -->
@@ -1524,7 +1542,7 @@
                 if (linkBtn) linkBtn.style.display = isAnon ? 'flex' : 'none';
                 if (profileBtn) profileBtn.style.display = isAnon ? 'none' : 'flex';
             } else {
-                loggedOut.style.display = 'block';
+                loggedOut.style.display = 'flex';
                 loggedIn.style.display = 'none';
             }
         }
