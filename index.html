@@ -17,14 +17,18 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+            padding: 15px;
             direction: rtl;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 100%;
-            height: calc(100vh - 100px);
+            flex: 1;
+            min-height: 0;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 400px 1fr;
@@ -35,9 +39,10 @@
         .header {
             background: white;
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
 
         .header h1 {
@@ -486,7 +491,7 @@
 
         /* ===== RESPONSIVE — MOBILE ===== */
         @media (max-width: 700px) {
-            body { padding: 0; }
+            body { padding: 0; height: auto; min-height: 100vh; overflow-y: auto; display: block; }
 
             .header {
                 border-radius: 0; padding: 10px 12px 8px; margin-bottom: 0;
@@ -765,6 +770,22 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transform: translateY(-1px);
         }
+
+        .btn-guest {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            transition: all 0.2s;
+        }
+        .btn-guest:hover { background: #d5dbdb; transform: translateY(-1px); }
 
         .btn-google svg {
             width: 18px;
@@ -1090,6 +1111,7 @@
                         </svg>
                         התחבר עם Google
                     </button>
+                    <button class="btn-guest" onclick="signInAsGuest()">🎮 שחק כאורח</button>
                 </div>
                 <div id="authLoggedIn" style="display:none; align-items:center; gap:10px;">
                     <div class="auth-user">
@@ -1097,38 +1119,69 @@
                         <img id="userPhoto" src="" alt="תמונת פרופיל" onerror="this.style.display='none'">
                         <span id="userName">משתמש</span>
                     </div>
-                    <button class="btn-profile" onclick="openProfile()">🏆 הפרופיל שלי</button>
+                    <button class="btn-profile" id="profileBtn" onclick="openProfile()">🏆 הפרופיל שלי</button>
+                    <button class="btn-google" id="linkGoogleBtn" onclick="linkGoogleAccount()" style="display:none;font-size:12px;padding:7px 10px;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
+                        שמור חשבון
+                    </button>
                     <button class="btn-signout" onclick="signOut()">התנתק</button>
                 </div>
             </div>
 
             <!-- Mode Selector -->
-            <button class="mode-btn active" onclick="setGameMode('local')">🏠 משחק מקומי</button>
-            <button class="mode-btn" onclick="setGameMode('online')">🌐 משחק מקוון</button>
+            <button class="mode-btn active" id="modeBtn-local" onclick="setGameMode('local', this)">🏠 מקומי</button>
+            <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 נגד מחשב</button>
+            <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
             
             <!-- Game Controls -->
             <button class="btn btn-secondary" onclick="undoMove()">↶ בטל מהלך</button>
             <button class="btn btn-danger" onclick="resetGame()">🔄 משחק חדש</button>
         </div>
 
+        <!-- Computer Controls -->
+        <div class="online-controls" id="computerControls" style="display: none; margin-top: 10px;">
+            <span style="font-weight:600;">🤖 משחק נגד מחשב — אתה לבן, המחשב שחור</span>
+            <label style="margin-right:12px;">רמה:
+                <select id="aiDepth" style="margin-right:4px;padding:4px 8px;border-radius:6px;border:1px solid #ccc;">
+                    <option value="1">קל</option>
+                    <option value="2" selected>בינוני</option>
+                    <option value="3">קשה</option>
+                </select>
+            </label>
+            <span id="computerThinking" style="display:none;color:#e67e22;font-weight:600;">🤔 המחשב חושב...</span>
+        </div>
+
         <!-- Online Controls -->
         <div class="online-controls" id="onlineControls" style="display: none; margin-top: 15px;">
             <h3>משחק מקוון</h3>
-            <div class="input-group">
-                <button class="btn btn-primary" onclick="createOnlineGame()">צור משחק חדש</button>
+            <div class="input-group" id="onlineCreateSection">
+                <button class="btn btn-primary" onclick="createOnlineGame()">צור לובי חדש</button>
             </div>
             <div id="gameCodeDisplay" style="display: none;">
-                <div>קוד המשחק:</div>
+                <div>קוד הלובי:</div>
                 <div class="game-code" id="gameCode"></div>
                 <div style="font-size: 12px; color: #7f8c8d; text-align: center;">שתף את הקוד עם השחקן השני</div>
+                <!-- Pending join requests shown to host -->
+                <div id="pendingRequests" style="display:none; margin-top:10px;">
+                    <div style="font-weight:600; margin-bottom:6px;">📩 בקשות הצטרפות:</div>
+                    <div id="pendingRequestsList"></div>
+                </div>
             </div>
-            <div class="input-group">
-                <input type="text" id="joinGameInput" placeholder="הכנס קוד משחק" maxlength="6">
-                <button class="btn btn-primary" onclick="joinOnlineGame()">הצטרף למשחק</button>
+            <div class="input-group" id="onlineJoinSection">
+                <input type="text" id="joinGameInput" placeholder="הכנס קוד לובי" maxlength="6">
+                <button class="btn btn-primary" onclick="requestJoinGame()">בקש להצטרף</button>
             </div>
             <div id="playerIndicator" style="display: none;"></div>
             <div id="waitingMessage" style="display: none;" class="waiting-message">
                 ממתין לשחקן שני...
+            </div>
+            <div id="approvalWaiting" style="display:none;" class="waiting-message">
+                ⏳ ממתין לאישור המארח...
             </div>
         </div>
     </div>
@@ -1347,7 +1400,7 @@
         const firebaseConfig = {
             apiKey:            "AIzaSyDTD1VBa15WiSnm8Iq7mIliI1o3w_RMpQk",
             authDomain:        "tactical-chess-c8b9c.firebaseapp.com",
-            databaseURL:       "https://tactical-chess-c8b9c-default-rtdb.firebaseio.com",
+            databaseURL:       "https://tactical-chess-c8b9c-default-rtdb.europe-west1.firebasedatabase.app",
             projectId:         "tactical-chess-c8b9c",
             storageBucket:     "tactical-chess-c8b9c.firebasestorage.app",
             messagingSenderId: "335790340419",
@@ -1393,15 +1446,20 @@
         function updateAuthUI(user) {
             const loggedOut = document.getElementById('authLoggedOut');
             const loggedIn = document.getElementById('authLoggedIn');
+            const linkBtn = document.getElementById('linkGoogleBtn');
+            const profileBtn = document.getElementById('profileBtn');
 
             if (user) {
                 loggedOut.style.display = 'none';
                 loggedIn.style.display = 'flex';
-                document.getElementById('userName').textContent = user.displayName || user.email || 'משתמש';
-                if (user.photoURL) {
+                const isAnon = user.isAnonymous;
+                document.getElementById('userName').textContent = isAnon ? '🎮 אורח' : (user.displayName || user.email || 'משתמש');
+                document.getElementById('userPhoto').style.display = isAnon ? 'none' : 'block';
+                if (!isAnon && user.photoURL) {
                     document.getElementById('userPhoto').src = user.photoURL;
-                    document.getElementById('userPhoto').style.display = 'block';
                 }
+                if (linkBtn) linkBtn.style.display = isAnon ? 'flex' : 'none';
+                if (profileBtn) profileBtn.style.display = isAnon ? 'none' : 'flex';
             } else {
                 loggedOut.style.display = 'block';
                 loggedIn.style.display = 'none';
@@ -1418,8 +1476,7 @@
             auth.signInWithPopup(provider)
                 .then((result) => {
                     const user = result.user;
-                    // Save user to database
-                    database.ref('users/' + user.uid).set({
+                    database.ref('users/' + user.uid).update({
                         name: user.displayName,
                         email: user.email,
                         photo: user.photoURL,
@@ -1433,10 +1490,158 @@
                 });
         }
 
+        function signInAsGuest() {
+            if (!isFirebaseAvailable) { alert('Firebase לא זמין.'); return; }
+            auth.signInAnonymously().catch((error) => {
+                alert('שגיאה בכניסה כאורח: ' + error.message);
+            });
+        }
+
+        function linkGoogleAccount() {
+            if (!currentUser || !currentUser.isAnonymous) return;
+            const provider = new firebase.auth.GoogleAuthProvider();
+            currentUser.linkWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    database.ref('users/' + user.uid).update({
+                        name: user.displayName,
+                        email: user.email,
+                        photo: user.photoURL,
+                        lastSeen: Date.now()
+                    });
+                    alert('✅ החשבון שלך נשמר! ניצחונותיך ושיאים ישמרו מעכשיו.');
+                })
+                .catch((error) => {
+                    if (error.code !== 'auth/popup-closed-by-user') {
+                        alert('שגיאה בשמירת חשבון: ' + error.message);
+                    }
+                });
+        }
+
         function signOut() {
             auth.signOut().catch((error) => {
                 alert('שגיאה בהתנתקות: ' + error.message);
             });
+        }
+
+        // ============================================================
+        // COMPUTER AI (minimax with alpha-beta pruning)
+        // ============================================================
+
+        const AI_PIECE_VALUES = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
+
+        // Position bonus tables (from black's perspective, rows 0-7 = ranks 8-1)
+        const AI_POS = {
+            p: [[0,0,0,0,0,0,0,0],[50,50,50,50,50,50,50,50],[10,10,20,30,30,20,10,10],[5,5,10,25,25,10,5,5],[0,0,0,20,20,0,0,0],[5,-5,-10,0,0,-10,-5,5],[5,10,10,-20,-20,10,10,5],[0,0,0,0,0,0,0,0]],
+            n: [[-50,-40,-30,-30,-30,-30,-40,-50],[-40,-20,0,0,0,0,-20,-40],[-30,0,10,15,15,10,0,-30],[-30,5,15,20,20,15,5,-30],[-30,0,15,20,20,15,0,-30],[-30,5,10,15,15,10,5,-30],[-40,-20,0,5,5,0,-20,-40],[-50,-40,-30,-30,-30,-30,-40,-50]],
+            b: [[-20,-10,-10,-10,-10,-10,-10,-20],[-10,0,0,0,0,0,0,-10],[-10,0,5,10,10,5,0,-10],[-10,5,5,10,10,5,5,-10],[-10,0,10,10,10,10,0,-10],[-10,10,10,10,10,10,10,-10],[-10,5,0,0,0,0,5,-10],[-20,-10,-10,-10,-10,-10,-10,-20]],
+            r: [[0,0,0,0,0,0,0,0],[5,10,10,10,10,10,10,5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[0,0,0,5,5,0,0,0]],
+            q: [[-20,-10,-10,-5,-5,-10,-10,-20],[-10,0,0,0,0,0,0,-10],[-10,0,5,5,5,5,0,-10],[-5,0,5,5,5,5,0,-5],[0,0,5,5,5,5,0,-5],[-10,5,5,5,5,5,0,-10],[-10,0,5,0,0,0,0,-10],[-20,-10,-10,-5,-5,-10,-10,-20]],
+            k: [[20,30,10,0,0,10,30,20],[20,20,0,0,0,0,20,20],[-10,-20,-20,-20,-20,-20,-20,-10],[-20,-30,-30,-40,-40,-30,-30,-20],[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30]]
+        };
+
+        function evaluateBoard() {
+            let score = 0;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const piece = board[r][c];
+                    if (!piece) continue;
+                    const type = piece.toLowerCase();
+                    const val = AI_PIECE_VALUES[type] || 0;
+                    const pos = AI_POS[type];
+                    const isBlack = piece === piece.toLowerCase();
+                    const posBonus = pos ? (isBlack ? pos[r][c] : pos[7-r][c]) : 0;
+                    if (isBlack) score += val + posBonus;
+                    else score -= val + posBonus;
+                }
+            }
+            return score;
+        }
+
+        function minimax(depth, alpha, beta, isMaximizing) {
+            if (depth === 0) return evaluateBoard();
+
+            const color = isMaximizing ? 'black' : 'white';
+            const moves = getAllMovesFor(color);
+            if (moves.length === 0) return isMaximizing ? -99999 : 99999;
+
+            if (isMaximizing) {
+                let best = -Infinity;
+                for (const m of moves) {
+                    const saved = applyTempMove(m);
+                    best = Math.max(best, minimax(depth - 1, alpha, beta, false));
+                    undoTempMove(saved);
+                    alpha = Math.max(alpha, best);
+                    if (beta <= alpha) break;
+                }
+                return best;
+            } else {
+                let best = Infinity;
+                for (const m of moves) {
+                    const saved = applyTempMove(m);
+                    best = Math.min(best, minimax(depth - 1, alpha, beta, true));
+                    undoTempMove(saved);
+                    beta = Math.min(beta, best);
+                    if (beta <= alpha) break;
+                }
+                return best;
+            }
+        }
+
+        function getAllMovesFor(color) {
+            const moves = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const piece = board[r][c];
+                    if (piece && isPlayerPiece(piece, color)) {
+                        for (const mv of getValidMoves(r, c)) {
+                            moves.push({ fromRow: r, fromCol: c, toRow: mv.row, toCol: mv.col });
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
+
+        function applyTempMove(m) {
+            const saved = {
+                board: board.map(r => r.slice()),
+                castlingRights: {...castlingRights},
+                enPassantTarget: enPassantTarget,
+                currentPlayer: currentPlayer
+            };
+            board[m.toRow][m.toCol] = board[m.fromRow][m.fromCol];
+            board[m.fromRow][m.fromCol] = '';
+            // Pawn promotion to queen
+            const piece = board[m.toRow][m.toCol];
+            if (piece === 'p' && m.toRow === 7) board[m.toRow][m.toCol] = 'q';
+            if (piece === 'P' && m.toRow === 0) board[m.toRow][m.toCol] = 'Q';
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            return saved;
+        }
+
+        function undoTempMove(saved) {
+            board = saved.board;
+            castlingRights = saved.castlingRights;
+            enPassantTarget = saved.enPassantTarget;
+            currentPlayer = saved.currentPlayer;
+        }
+
+        function makeComputerMove() {
+            if (currentPlayer !== 'black') return;
+            const depth = parseInt(document.getElementById('aiDepth')?.value || '2');
+            const moves = getAllMovesFor('black');
+            if (moves.length === 0) return;
+
+            let bestScore = -Infinity;
+            let bestMove = moves[0];
+            for (const m of moves) {
+                const saved = applyTempMove(m);
+                const score = minimax(depth - 1, -Infinity, Infinity, false);
+                undoTempMove(saved);
+                if (score > bestScore) { bestScore = score; bestMove = m; }
+            }
+            makeMove(bestMove.fromRow, bestMove.fromCol, bestMove.toRow, bestMove.toCol);
         }
 
         // Piece values for material counting
@@ -1505,14 +1710,17 @@
         }
 
         function handleSquareClick(row, col) {
+            // Block input while computer is thinking or it's computer's turn
+            if (gameMode === 'computer' && currentPlayer === 'black') return;
+
             const piece = board[row][col];
-            
+
             if (selectedSquare) {
                 const [selectedRow, selectedCol] = selectedSquare;
                 const validMoves = getValidMoves(selectedRow, selectedCol);
-                
+
                 const isValidMove = validMoves.some(move => move.row === row && move.col === col);
-                
+
                 if (isValidMove) {
                     makeMove(selectedRow, selectedCol, row, col);
                     selectedSquare = null;
@@ -1620,6 +1828,16 @@
             clearHighlights();
             initBoard();
             checkGameStatus();
+
+            // Trigger computer move
+            if (gameMode === 'computer' && currentPlayer === 'black' && hasAnyValidMoves('black')) {
+                const thinkingEl = document.getElementById('computerThinking');
+                if (thinkingEl) thinkingEl.style.display = 'inline';
+                setTimeout(() => {
+                    makeComputerMove();
+                    if (thinkingEl) thinkingEl.style.display = 'none';
+                }, 300);
+            }
 
             // Update online game
             updateOnlineGame();
@@ -2972,31 +3190,30 @@
         initBoard();
 
         // Online Game Functions
-        function setGameMode(mode) {
+        function setGameMode(mode, btnEl) {
             if (mode === 'online' && !isFirebaseAvailable) {
                 alert('המשחק המקוון אינו זמין כרגע. אנא שחק במצב מקומי.');
                 return;
             }
-            
+
             gameMode = mode;
-            
-            // Update button styles
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Show/hide online controls
-            const onlineControls = document.getElementById('onlineControls');
-            if (mode === 'online') {
-                onlineControls.style.display = 'block';
-            } else {
-                onlineControls.style.display = 'none';
-                if (gameRef) {
-                    gameRef.off();
-                }
+
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            else { const b = document.getElementById('modeBtn-' + mode); if (b) b.classList.add('active'); }
+
+            document.getElementById('onlineControls').style.display = mode === 'online' ? 'block' : 'none';
+            document.getElementById('computerControls').style.display = mode === 'computer' ? 'flex' : 'none';
+
+            if (mode !== 'online') {
+                if (gameRef) { gameRef.off(); gameRef = null; }
                 onlineGameId = null;
                 playerColor = null;
+            }
+
+            if (mode === 'computer') {
+                resetGame();
+                playerColor = 'white';
             }
         }
 
@@ -3005,14 +3222,8 @@
         }
 
         function createOnlineGame() {
-            if (!database) {
-                alert('Firebase לא זמין. אנא רענן את הדף.');
-                return;
-            }
-            if (!currentUser) {
-                alert('יש להתחבר עם Google לפני יצירת משחק מקוון.');
-                return;
-            }
+            if (!database) { alert('Firebase לא זמין. אנא רענן את הדף.'); return; }
+            if (!currentUser) { alert('יש להתחבר לפני יצירת משחק מקוון.'); return; }
 
             const gameCode = generateGameCode();
             onlineGameId = gameCode;
@@ -3028,23 +3239,36 @@
                     white: { uid: currentUser.uid, name: currentUser.displayName || 'שחקן לבן', photo: currentUser.photoURL || '' },
                     black: null
                 },
+                requests: {},
+                status: 'waiting',
                 createdAt: Date.now()
             };
 
             database.ref('games/' + gameCode).set(gameData).then(() => {
                 document.getElementById('gameCodeDisplay').style.display = 'block';
                 document.getElementById('gameCode').textContent = gameCode;
+                document.getElementById('onlineJoinSection').style.display = 'none';
+                document.getElementById('onlineCreateSection').style.display = 'none';
                 document.getElementById('playerIndicator').style.display = 'block';
                 document.getElementById('playerIndicator').className = 'player-indicator player-white';
-                document.getElementById('playerIndicator').textContent = `אתה משחק כלבן ♔ - ${currentUser.displayName || ''}`;
+                document.getElementById('playerIndicator').textContent = `אתה המארח — לבן ♔`;
                 document.getElementById('waitingMessage').style.display = 'block';
 
                 gameRef = database.ref('games/' + gameCode);
-                gameRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data && data.players.black) {
+
+                // Listen for join requests
+                gameRef.child('requests').on('value', (snap) => {
+                    const requests = snap.val() || {};
+                    renderPendingRequests(requests, gameCode);
+                });
+
+                // Listen for game start (black player approved)
+                gameRef.child('players/black').on('value', (snap) => {
+                    if (snap.val()) {
                         document.getElementById('waitingMessage').style.display = 'none';
-                        syncGameState(data);
+                        document.getElementById('pendingRequests').style.display = 'none';
+                        gameRef.once('value').then(s => syncGameState(s.val()));
+                        gameRef.on('value', s => { if (s.val()) syncGameState(s.val()); });
                     }
                 });
             }).catch((error) => {
@@ -3052,61 +3276,99 @@
             });
         }
 
-        function joinOnlineGame() {
-            if (!database) {
-                alert('Firebase לא זמין. אנא רענן את הדף.');
-                return;
-            }
-            if (!currentUser) {
-                alert('יש להתחבר עם Google לפני הצטרפות למשחק מקוון.');
-                return;
-            }
+        function renderPendingRequests(requests, gameCode) {
+            const container = document.getElementById('pendingRequests');
+            const list = document.getElementById('pendingRequestsList');
+            const pending = Object.entries(requests).filter(([, r]) => r.status === 'pending');
+            if (pending.length === 0) { container.style.display = 'none'; return; }
+            container.style.display = 'block';
+            list.innerHTML = pending.map(([uid, r]) => `
+                <div style="display:flex;align-items:center;gap:8px;padding:6px;background:#f8f9fa;border-radius:6px;margin-bottom:4px;">
+                    ${r.photo ? `<img src="${r.photo}" style="width:24px;height:24px;border-radius:50%;" onerror="this.style.display='none'">` : ''}
+                    <span style="flex:1;">${r.name || 'אורח'}</span>
+                    <button class="btn btn-primary" style="padding:4px 10px;font-size:12px;" onclick="approveJoinRequest('${gameCode}','${uid}',${JSON.stringify(r.name)},${JSON.stringify(r.photo)})">✅ אשר</button>
+                    <button class="btn btn-danger" style="padding:4px 10px;font-size:12px;" onclick="rejectJoinRequest('${gameCode}','${uid}')">❌ דחה</button>
+                </div>`).join('');
+        }
+
+        function approveJoinRequest(gameCode, uid, name, photo) {
+            database.ref('games/' + gameCode).update({
+                'players/black': { uid, name: name || 'שחקן שחור', photo: photo || '' },
+                'status': 'active',
+                [`requests/${uid}/status`]: 'approved'
+            });
+        }
+
+        function rejectJoinRequest(gameCode, uid) {
+            database.ref(`games/${gameCode}/requests/${uid}/status`).set('rejected');
+        }
+
+        function requestJoinGame() {
+            if (!database) { alert('Firebase לא זמין. אנא רענן את הדף.'); return; }
+            if (!currentUser) { alert('יש להתחבר לפני הצטרפות למשחק מקוון.'); return; }
 
             const gameCode = document.getElementById('joinGameInput').value.toUpperCase().trim();
             if (!gameCode || gameCode.length !== 6) {
-                alert('אנא הכנס קוד משחק תקין (6 תווים)');
+                alert('אנא הכנס קוד לובי תקין (6 תווים)');
                 return;
             }
 
-            onlineGameId = gameCode;
-            playerColor = 'black';
-
-            gameRef = database.ref('games/' + gameCode);
-            gameRef.once('value').then((snapshot) => {
+            database.ref('games/' + gameCode).once('value').then((snapshot) => {
                 if (!snapshot.exists()) {
-                    alert('משחק לא נמצא. בדוק את הקוד ונסה שוב.');
+                    alert('לובי לא נמצא. בדוק את הקוד ונסה שוב.');
                     return;
                 }
-
                 const data = snapshot.val();
-                if (data.players.white.uid === currentUser.uid) {
-                    alert('אתה כבר בתוך המשחק הזה כשחקן לבן!');
+                if (data.players && data.players.white && data.players.white.uid === currentUser.uid) {
+                    alert('אתה כבר בתוך הלובי הזה כמארח!');
+                    return;
+                }
+                if (data.status === 'active') {
+                    alert('המשחק כבר התחיל. נסה לובי אחר.');
                     return;
                 }
 
-                gameRef.update({
-                    'players/black': {
-                        uid: currentUser.uid,
-                        name: currentUser.displayName || 'שחקן שחור',
-                        photo: currentUser.photoURL || ''
-                    }
+                onlineGameId = gameCode;
+                playerColor = 'black';
+
+                // Write join request
+                database.ref(`games/${gameCode}/requests/${currentUser.uid}`).set({
+                    name: currentUser.displayName || (currentUser.isAnonymous ? 'אורח' : 'שחקן'),
+                    photo: currentUser.photoURL || '',
+                    status: 'pending'
                 }).then(() => {
-                    document.getElementById('gameCodeDisplay').style.display = 'block';
-                    document.getElementById('gameCode').textContent = gameCode;
-                    document.getElementById('playerIndicator').style.display = 'block';
-                    document.getElementById('playerIndicator').className = 'player-indicator player-black';
-                    document.getElementById('playerIndicator').textContent = `אתה משחק כשחור ♚ - ${currentUser.displayName || ''}`;
-                    document.getElementById('joinGameInput').value = '';
+                    document.getElementById('approvalWaiting').style.display = 'block';
+                    document.getElementById('onlineCreateSection').style.display = 'none';
 
-                    syncGameState(data);
+                    // Watch for approval/rejection
+                    const reqRef = database.ref(`games/${gameCode}/requests/${currentUser.uid}/status`);
+                    reqRef.on('value', (snap) => {
+                        const status = snap.val();
+                        if (status === 'approved') {
+                            reqRef.off();
+                            document.getElementById('approvalWaiting').style.display = 'none';
+                            document.getElementById('gameCodeDisplay').style.display = 'block';
+                            document.getElementById('gameCode').textContent = gameCode;
+                            document.getElementById('playerIndicator').style.display = 'block';
+                            document.getElementById('playerIndicator').className = 'player-indicator player-black';
+                            document.getElementById('playerIndicator').textContent = `אתה משחק כשחור ♚`;
+                            document.getElementById('joinGameInput').value = '';
 
-                    gameRef.on('value', (snapshot) => {
-                        const data = snapshot.val();
-                        if (data) syncGameState(data);
+                            gameRef = database.ref('games/' + gameCode);
+                            gameRef.once('value').then(s => syncGameState(s.val()));
+                            gameRef.on('value', s => { if (s.val()) syncGameState(s.val()); });
+                        } else if (status === 'rejected') {
+                            reqRef.off();
+                            document.getElementById('approvalWaiting').style.display = 'none';
+                            document.getElementById('onlineCreateSection').style.display = 'block';
+                            alert('הבקשה שלך נדחתה על ידי המארח.');
+                            onlineGameId = null;
+                            playerColor = null;
+                        }
                     });
                 });
             }).catch((error) => {
-                alert('שגיאה בהצטרפות למשחק: ' + error.message);
+                alert('שגיאה בהצטרפות: ' + error.message);
             });
         }
 
