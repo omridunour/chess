@@ -1782,11 +1782,6 @@
                     square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                     square.dataset.row = row;
                     square.dataset.col = col;
-                    square.addEventListener('touchstart', function(e) {
-                        e.preventDefault();
-                        handleSquareClick(row, col);
-                    }, { passive: false });
-                    square.onclick = () => handleSquareClick(row, col);
                     
                     const piece = board[row][col];
                     if (piece) {
@@ -3280,6 +3275,15 @@
 
         // Initialize the game
         initBoard();
+
+        // Single delegated click listener — handles both mouse and touch taps.
+        // touch-action:manipulation on .square removes the 300ms iOS delay.
+        // Adding here (not inside initBoard) so it survives innerHTML clears.
+        document.getElementById('chessboard').addEventListener('click', function(e) {
+            const sq = e.target.closest('.square');
+            if (!sq) return;
+            handleSquareClick(+sq.dataset.row, +sq.dataset.col);
+        });
 
         // Online Game Functions
         let pendingRequestsCache = {};
