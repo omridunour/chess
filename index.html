@@ -207,6 +207,7 @@
             align-items: center;
             justify-content: center;
             font-size: clamp(40px, 6vw, 80px);
+            line-height: 1;
             cursor: pointer;
             position: relative;
             transition: all 0.2s;
@@ -3800,12 +3801,6 @@
             const size = Math.max(50, Math.min(availH, availW));
             boardEl.style.width = size + 'px';
             boardEl.style.height = size + 'px';
-
-            // Debug — remove after diagnosis
-            const after = boardEl.getBoundingClientRect();
-            let dbg = document.getElementById('_dbg');
-            if (!dbg) { dbg = document.createElement('div'); dbg.id = '_dbg'; dbg.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#0f0;font:11px monospace;padding:3px 5px;z-index:9999;white-space:pre;pointer-events:none;'; document.body.appendChild(dbg); }
-            dbg.textContent = 'vvH=' + Math.round(viewH) + ' iH=' + window.innerHeight + ' iW=' + window.innerWidth + '\nboardTop=' + Math.round(boardTop) + ' tabsH=' + tabsH + ' availH=' + Math.round(availH) + ' aW=' + availW + '\nset=' + size + ' actual=' + Math.round(after.width) + 'x' + Math.round(after.height) + ' bottom=' + Math.round(after.bottom);
         }
 
         function initMobileLayout() {
