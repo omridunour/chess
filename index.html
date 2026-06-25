@@ -3788,23 +3788,33 @@
             const tabsEl = document.getElementById('mobileTabs');
             if (!boardEl) return;
 
-            // visualViewport.height = actual visible height including URL bar subtraction.
-            // On Android Chrome and iOS Safari this is more accurate than window.innerHeight.
             const viewH = (window.visualViewport && window.visualViewport.height > 100)
                 ? window.visualViewport.height
                 : window.innerHeight;
 
-            // boardTop is measured directly — includes everything above: header, padding,
-            // turn indicator — no manual summing needed.
             const boardTop = boardEl.getBoundingClientRect().top;
             const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
 
             const availH = viewH - boardTop - tabsH - 2;
             const availW = boardEl.parentElement.offsetWidth;
             const size = Math.max(50, Math.min(availH, availW));
-            // Set both dimensions: aspect-ratio alone is unreliable in some flex contexts
             boardEl.style.width = size + 'px';
             boardEl.style.height = size + 'px';
+
+            // Debug overlay — remove once confirmed working
+            let dbg = document.getElementById('_dbg');
+            if (!dbg) {
+                dbg = document.createElement('div');
+                dbg.id = '_dbg';
+                dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#fff;font:12px monospace;padding:4px 6px;z-index:9999;white-space:pre;pointer-events:none;';
+                document.body.appendChild(dbg);
+            }
+            dbg.textContent = [
+                'vvH=' + Math.round(viewH) + ' iwH=' + window.innerHeight + ' iwW=' + window.innerWidth,
+                'boardTop=' + Math.round(boardTop) + ' tabsH=' + tabsH + ' availH=' + Math.round(availH) + ' availW=' + availW,
+                'size=' + size + ' set:' + boardEl.style.width + 'x' + boardEl.style.height,
+                'actual:' + Math.round(boardEl.getBoundingClientRect().width) + 'x' + Math.round(boardEl.getBoundingClientRect().height)
+            ].join('\n');
         }
 
         function initMobileLayout() {
