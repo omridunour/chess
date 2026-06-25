@@ -521,7 +521,10 @@
             .mobile-tabs { order: 2; }
             .left-panels { order: 3; height: auto; overflow-y: visible; border-left: none; }
             .board-container { height: auto; padding: 8px 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
-            .board-with-coords { width: min(100%, calc(100dvh - 185px)); max-width: 100%; }
+            /* Fallback for browsers where dvh = full screen height (old iOS/Android) */
+            .board-with-coords { width: min(100%, calc(100vh - 290px)); max-width: 100%; }
+            /* Modern browsers: dvh tracks actual viewport after bars */
+            .board-with-coords { width: min(100%, calc(100dvh - 200px)); max-width: 100%; }
             .coach-panel { padding-left: 20px; padding-right: 20px; }
 
             /* Activate tab system */
