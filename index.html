@@ -213,6 +213,7 @@
             position: relative;
             transition: all 0.2s;
             min-width: 0;
+            touch-action: manipulation;
         }
 
         .square.light {
@@ -3847,16 +3848,6 @@
             window.visualViewport.addEventListener('resize', fitBoardToViewport);
         }
 
-        // Handle square taps on touch devices (and prevent double-tap zoom)
-        document.addEventListener('touchend', function(e) {
-            const squareEl = e.target.closest('.square');
-            if (squareEl) {
-                e.preventDefault(); // blocks double-tap zoom AND the synthetic click that follows
-                const row = parseInt(squareEl.dataset.row);
-                const col = parseInt(squareEl.dataset.col);
-                handleSquareClick(row, col);
-            }
-        }, { passive: false });
     </script>
 </body>
 </html>
