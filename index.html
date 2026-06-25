@@ -499,10 +499,11 @@
 
         /* ===== RESPONSIVE — TABLET + MOBILE (<1200px) ===== */
         @media (max-width: 1200px) {
+            /* Scrollable page: board at top, panels below the fold */
             body { height: auto; min-height: 100dvh; overflow-y: auto; overflow-x: hidden; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) no-repeat fixed; }
 
             /* Compact header — two rows of buttons, no title */
-            .header { padding: 6px 12px; }
+            .header { padding: 6px 12px; flex-shrink: 0; }
             .header h1 { display: none; }
             .header-controls { flex-direction: column; gap: 6px; }
             .header-row { display: flex; gap: 6px; width: 100%; align-items: stretch; }
@@ -520,9 +521,11 @@
             .right-board { order: 1; height: auto; }
             .mobile-tabs { order: 2; }
             .left-panels { order: 3; height: auto; overflow-y: visible; border-left: none; }
+            /* Board container: JS will set board size via width+height */
             .board-container { height: auto; padding: 2px 0 1px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 4px 10px; margin-bottom: 4px; }
-            .board-with-coords { max-width: 100%; }
+            /* Board sized by JS — max-width as safety cap */
+            .board-with-coords { max-width: 100%; aspect-ratio: 1; }
             .coach-panel { padding-left: 20px; padding-right: 20px; }
 
             /* Activate tab system */
@@ -3772,29 +3775,36 @@
         // ============================================================
 
         function isMobile() {
-            return window.innerWidth <= 700;
+            return window.innerWidth <= 1200;
         }
 
         function fitBoardToViewport() {
             if (window.innerWidth > 1200) {
                 const board = document.querySelector('.board-with-coords');
-                if (board) board.style.width = '';
+                if (board) { board.style.width = ''; board.style.height = ''; }
                 return;
             }
             const boardEl = document.querySelector('.board-with-coords');
             const tabsEl = document.getElementById('mobileTabs');
             if (!boardEl) return;
 
-            // Measure where the board actually starts (accounts for header, padding,
-            // turn indicator, borders — everything above it automatically)
+            // visualViewport.height = actual visible height including URL bar subtraction.
+            // On Android Chrome and iOS Safari this is more accurate than window.innerHeight.
+            const viewH = (window.visualViewport && window.visualViewport.height > 100)
+                ? window.visualViewport.height
+                : window.innerHeight;
+
+            // boardTop is measured directly — includes everything above: header, padding,
+            // turn indicator — no manual summing needed.
             const boardTop = boardEl.getBoundingClientRect().top;
             const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
-            const cPadBot = parseInt(getComputedStyle(boardEl.parentElement).paddingBottom) || 0;
 
-            const availH = window.innerHeight - boardTop - tabsH - cPadBot - 2;
+            const availH = viewH - boardTop - tabsH - 2;
             const availW = boardEl.parentElement.offsetWidth;
             const size = Math.max(50, Math.min(availH, availW));
+            // Set both dimensions: aspect-ratio alone is unreliable in some flex contexts
             boardEl.style.width = size + 'px';
+            boardEl.style.height = size + 'px';
         }
 
         function initMobileLayout() {
@@ -3827,17 +3837,14 @@
 
         // Run on load and resize
         initMobileLayout();
-        fitBoardToViewport();
+        requestAnimationFrame(function() { requestAnimationFrame(fitBoardToViewport); });
         window.addEventListener('resize', function() {
             initMobileLayout();
-            fitBoardToViewport();
+            requestAnimationFrame(fitBoardToViewport);
         });
-        window.addEventListener('orientationchange', function() {
-            setTimeout(fitBoardToViewport, 150);
-        });
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) fitBoardToViewport();
-        });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', fitBoardToViewport);
+        }
 
         // Prevent iOS double-tap zoom on board squares
         document.addEventListener('touchend', function(e) {
