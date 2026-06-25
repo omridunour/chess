@@ -3800,21 +3800,6 @@
             const size = Math.max(50, Math.min(availH, availW));
             boardEl.style.width = size + 'px';
             boardEl.style.height = size + 'px';
-
-            // Debug overlay — remove once confirmed working
-            let dbg = document.getElementById('_dbg');
-            if (!dbg) {
-                dbg = document.createElement('div');
-                dbg.id = '_dbg';
-                dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:#fff;font:12px monospace;padding:4px 6px;z-index:9999;white-space:pre;pointer-events:none;';
-                document.body.appendChild(dbg);
-            }
-            dbg.textContent = [
-                'vvH=' + Math.round(viewH) + ' iwH=' + window.innerHeight + ' iwW=' + window.innerWidth,
-                'boardTop=' + Math.round(boardTop) + ' tabsH=' + tabsH + ' availH=' + Math.round(availH) + ' availW=' + availW,
-                'size=' + size + ' set:' + boardEl.style.width + 'x' + boardEl.style.height,
-                'actual:' + Math.round(boardEl.getBoundingClientRect().width) + 'x' + Math.round(boardEl.getBoundingClientRect().height)
-            ].join('\n');
         }
 
         function initMobileLayout() {
