@@ -3847,10 +3847,14 @@
             window.visualViewport.addEventListener('resize', fitBoardToViewport);
         }
 
-        // Prevent iOS double-tap zoom on board squares
+        // Handle square taps on touch devices (and prevent double-tap zoom)
         document.addEventListener('touchend', function(e) {
-            if (e.target.closest('.square')) {
-                e.preventDefault();
+            const squareEl = e.target.closest('.square');
+            if (squareEl) {
+                e.preventDefault(); // blocks double-tap zoom AND the synthetic click that follows
+                const row = parseInt(squareEl.dataset.row);
+                const col = parseInt(squareEl.dataset.col);
+                handleSquareClick(row, col);
             }
         }, { passive: false });
     </script>
