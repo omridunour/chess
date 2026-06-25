@@ -3781,22 +3781,18 @@
                 if (board) board.style.width = '';
                 return;
             }
-            const header = document.querySelector('.header');
-            const tabsEl = document.getElementById('mobileTabs');
-            const turnEl = document.getElementById('turnIndicator');
-            const containerEl = document.querySelector('.board-container');
             const boardEl = document.querySelector('.board-with-coords');
-            if (!boardEl || !containerEl) return;
+            const tabsEl = document.getElementById('mobileTabs');
+            if (!boardEl) return;
 
-            const headerH = header ? header.offsetHeight : 0;
+            // Measure where the board actually starts (accounts for header, padding,
+            // turn indicator, borders — everything above it automatically)
+            const boardTop = boardEl.getBoundingClientRect().top;
             const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
-            const turnH = turnEl ? turnEl.offsetHeight : 0;
-            const turnMargin = turnEl ? (parseInt(getComputedStyle(turnEl).marginBottom) || 0) : 0;
-            const cPadTop = parseInt(getComputedStyle(containerEl).paddingTop) || 0;
-            const cPadBot = parseInt(getComputedStyle(containerEl).paddingBottom) || 0;
+            const cPadBot = parseInt(getComputedStyle(boardEl.parentElement).paddingBottom) || 0;
 
-            const availH = window.innerHeight - headerH - tabsH - cPadTop - turnH - turnMargin - cPadBot - 4;
-            const availW = containerEl.offsetWidth;
+            const availH = window.innerHeight - boardTop - tabsH - cPadBot - 2;
+            const availW = boardEl.parentElement.offsetWidth;
             const size = Math.max(50, Math.min(availH, availW));
             boardEl.style.width = size + 'px';
         }
