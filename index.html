@@ -522,10 +522,7 @@
             .left-panels { order: 3; height: auto; overflow-y: visible; border-left: none; }
             .board-container { height: auto; padding: 2px 0 1px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 4px 10px; margin-bottom: 4px; }
-            /* Fallback for browsers where dvh = full screen height (old iOS/Android) */
-            .board-with-coords { width: min(100%, calc(100vh - 255px)); max-width: 100%; }
-            /* Modern browsers: dvh tracks actual viewport after bars */
-            .board-with-coords { width: min(100%, calc(100dvh - 165px)); max-width: 100%; }
+            .board-with-coords { max-width: 100%; }
             .coach-panel { padding-left: 20px; padding-right: 20px; }
 
             /* Activate tab system */
@@ -3778,6 +3775,32 @@
             return window.innerWidth <= 700;
         }
 
+        function fitBoardToViewport() {
+            if (window.innerWidth > 1200) {
+                const board = document.querySelector('.board-with-coords');
+                if (board) board.style.width = '';
+                return;
+            }
+            const header = document.querySelector('.header');
+            const tabsEl = document.getElementById('mobileTabs');
+            const turnEl = document.getElementById('turnIndicator');
+            const containerEl = document.querySelector('.board-container');
+            const boardEl = document.querySelector('.board-with-coords');
+            if (!boardEl || !containerEl) return;
+
+            const headerH = header ? header.offsetHeight : 0;
+            const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
+            const turnH = turnEl ? turnEl.offsetHeight : 0;
+            const turnMargin = turnEl ? (parseInt(getComputedStyle(turnEl).marginBottom) || 0) : 0;
+            const cPadTop = parseInt(getComputedStyle(containerEl).paddingTop) || 0;
+            const cPadBot = parseInt(getComputedStyle(containerEl).paddingBottom) || 0;
+
+            const availH = window.innerHeight - headerH - tabsH - cPadTop - turnH - turnMargin - cPadBot - 4;
+            const availW = containerEl.offsetWidth;
+            const size = Math.max(50, Math.min(availH, availW));
+            boardEl.style.width = size + 'px';
+        }
+
         function initMobileLayout() {
             const tabs = document.getElementById('mobileTabs');
             if (isMobile()) {
@@ -3808,7 +3831,17 @@
 
         // Run on load and resize
         initMobileLayout();
-        window.addEventListener('resize', initMobileLayout);
+        fitBoardToViewport();
+        window.addEventListener('resize', function() {
+            initMobileLayout();
+            fitBoardToViewport();
+        });
+        window.addEventListener('orientationchange', function() {
+            setTimeout(fitBoardToViewport, 150);
+        });
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) fitBoardToViewport();
+        });
 
         // Prevent iOS double-tap zoom on board squares
         document.addEventListener('touchend', function(e) {
