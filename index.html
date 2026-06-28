@@ -1222,11 +1222,6 @@
 
             <!-- Create lobby section -->
             <div id="onlineCreateSection" style="margin-bottom:12px;">
-                <label style="font-weight:600;display:block;margin-bottom:6px;font-size:14px;">סוג לובי:</label>
-                <div style="display:flex;gap:6px;margin-bottom:10px;">
-                    <button id="lobbyTypePublic" class="btn btn-primary lobby-type-btn active-type" onclick="setLobbyType('public')" style="flex:1;padding:11px 6px;font-size:13px;">🌐 פתוח לכולם</button>
-                    <button id="lobbyTypePrivate" class="btn btn-secondary lobby-type-btn" onclick="setLobbyType('private')" style="flex:1;padding:11px 6px;font-size:13px;">🔒 פרטי (קוד בלבד)</button>
-                </div>
                 <button class="btn btn-primary" onclick="createOnlineGame()" style="width:100%;padding:13px;font-size:16px;border-radius:7px;">➕ צור לובי חדש</button>
             </div>
 
@@ -3283,7 +3278,7 @@
 
         // Online Game Functions
         let pendingRequestsCache = {};
-        let selectedLobbyType = 'public';
+        const selectedLobbyType = 'public';
 
         function setLobbyType(type) {
             selectedLobbyType = type;
