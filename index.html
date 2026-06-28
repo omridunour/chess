@@ -569,10 +569,10 @@
             .btn-profile { font-size: 12px; padding: 7px 10px; }
             .btn-signout { font-size: 12px; padding: 7px 10px; }
 
-            .board-container { padding: 2px 21px 1px 30px; box-shadow: none; border-radius: 0; }
-            /* iOS Safari only — needs extra right padding to visually center the board */
+            /* left:4px + coord-ranks:30px = 34px each side → chess squares visually centered */
+            .board-container { padding: 2px 34px 1px 4px; box-shadow: none; border-radius: 0; }
             @supports (-webkit-touch-callout: none) {
-                .board-container { padding: 2px 35px 1px 30px; }
+                .board-container { padding: 2px 38px 1px 4px; }
             }
             .square { font-size: clamp(22px, 9vw, 50px); }
             .turn-indicator { font-size: 13px; padding: 4px 8px; margin-bottom: 4px; }
