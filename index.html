@@ -2226,7 +2226,8 @@
 
         function evaluateTacticOpportunities(attackingPlayer) {
             const defendingPlayer = attackingPlayer === 'white' ? 'black' : 'white';
-            let bestScore = 0, bestPiece = null, bestPos = '', count = 0;
+            let totalScore = 0;
+            const threats = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
                     const piece = board[r][c];
@@ -2244,16 +2245,13 @@
                         if (pieceVal > minAttackerVal) moveScore = (pieceVal - minAttackerVal) * 10;
                     }
                     if (moveScore > 0) {
-                        count++;
-                        if (moveScore > bestScore) {
-                            bestScore = moveScore;
-                            bestPiece = getPieceName(piece);
-                            bestPos = getSquareName(r, c);
-                        }
+                        totalScore += moveScore;
+                        threats.push({ piece: getPieceName(piece), pos: getSquareName(r, c), score: moveScore });
                     }
                 }
             }
-            return { score: bestScore, piece: bestPiece, pos: bestPos, count };
+            threats.sort((a, b) => b.score - a.score);
+            return { score: totalScore, threats, count: threats.length };
         }
 
         function analyzePlannedMove(fromRow, fromCol, toRow, toCol) {
@@ -2301,28 +2299,23 @@
                 score += 15;
             }
 
-            // Lookahead: best winning capture/threat available to us after this move
+            // Lookahead: all winning captures/threats available to us after this move
             const ourOpp = evaluateTacticOpportunities(currentPlayer);
             if (ourOpp.score > 0) {
-                items.push({
-                    type: 'good',
-                    text: `🎯 מאפשר לתפוס ${ourOpp.piece} ב-${ourOpp.pos}`
+                ourOpp.threats.forEach(t => {
+                    items.push({ type: 'good', text: `🎯 מאפשר לתפוס ${t.piece} ב-${t.pos}` });
                 });
                 if (ourOpp.count >= 2) {
-                    items.push({
-                        type: 'good',
-                        text: `🎭 פורק! ${ourOpp.count} כלים בסכנה`
-                    });
+                    items.push({ type: 'good', text: `🎭 פורק! ${ourOpp.count} כלים בסכנה` });
                 }
                 score += ourOpp.score;
             }
 
-            // Lookahead: best winning capture/threat available to opponent after this move
+            // Lookahead: all winning captures/threats available to opponent after this move
             const theirOpp = evaluateTacticOpportunities(opponentColor);
             if (theirOpp.score > 0) {
-                items.push({
-                    type: 'bad',
-                    text: `⚠️ מאפשר ליריב לתפוס ${theirOpp.piece} ב-${theirOpp.pos}`
+                theirOpp.threats.forEach(t => {
+                    items.push({ type: 'bad', text: `⚠️ מאפשר ליריב לתפוס ${t.piece} ב-${t.pos}` });
                 });
                 score -= theirOpp.score;
             }
