@@ -2224,6 +2224,38 @@
             tooltip.classList.remove('show');
         }
 
+        function evaluateTacticOpportunities(attackingPlayer) {
+            const defendingPlayer = attackingPlayer === 'white' ? 'black' : 'white';
+            let bestScore = 0, bestPiece = null, bestPos = '', count = 0;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const piece = board[r][c];
+                    if (!piece || isPlayerPiece(piece, attackingPlayer)) continue;
+                    const pieceVal = PIECE_VALUES[piece];
+                    if (!pieceVal) continue;
+                    const attackers = findAttackers(r, c, attackingPlayer);
+                    if (attackers.length === 0) continue;
+                    const defenders = findAttackers(r, c, defendingPlayer);
+                    let moveScore = 0;
+                    if (defenders.length === 0) {
+                        moveScore = pieceVal * 10;
+                    } else {
+                        const minAttackerVal = Math.min(...attackers.map(a => PIECE_VALUES[board[a.row][a.col]] || 10));
+                        if (pieceVal > minAttackerVal) moveScore = (pieceVal - minAttackerVal) * 10;
+                    }
+                    if (moveScore > 0) {
+                        count++;
+                        if (moveScore > bestScore) {
+                            bestScore = moveScore;
+                            bestPiece = getPieceName(piece);
+                            bestPos = getSquareName(r, c);
+                        }
+                    }
+                }
+            }
+            return { score: bestScore, piece: bestPiece, pos: bestPos, count };
+        }
+
         function analyzePlannedMove(fromRow, fromCol, toRow, toCol) {
             const items = [];
             let score = 0;
@@ -2269,74 +2301,30 @@
                 score += 15;
             }
 
-            // Check if piece will be threatened after move
-            const newThreats = findAttackers(toRow, toCol, opponentColor);
-            if (newThreats.length > 0) {
-                const isDefended = findAttackers(toRow, toCol, currentPlayer).length > 0;
-                if (!isDefended) {
-                    items.push({
-                        type: 'bad',
-                        text: `⚠️ ${pieceName} יהיה מאוים ולא מוגן!`
-                    });
-                    score -= PIECE_VALUES[piece] * 5;
-                } else {
-                    const pieceValue = PIECE_VALUES[piece];
-                    const minAttackerValue = Math.min(...newThreats.map(pos => 
-                        PIECE_VALUES[board[pos.row][pos.col]] || 10
-                    ));
-                    if (pieceValue > minAttackerValue) {
-                        items.push({
-                            type: 'bad',
-                            text: `⚠️ ${pieceName} יהיה מאוים (חילופים לא משתלמים)`
-                        });
-                        score -= (pieceValue - minAttackerValue) * 5;
-                    } else {
-                        items.push({
-                            type: 'neutral',
-                            text: `ℹ️ ${pieceName} יהיה מוגן אבל מאוים`
-                        });
-                    }
-                }
-            }
-
-            // Check what new pieces can be attacked
-            let newAttacks = [];
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    const targetPiece = board[r][c];
-                    if (targetPiece && !isPlayerPiece(targetPiece, currentPlayer)) {
-                        if (isSquareAttacked(r, c, currentPlayer)) {
-                            // Check if it wasn't attacked before
-                            board = originalBoard;
-                            const wasAttacked = isSquareAttacked(r, c, currentPlayer);
-                            board = tempBoard;
-                            
-                            if (!wasAttacked) {
-                                newAttacks.push({
-                                    piece: getPieceName(targetPiece),
-                                    value: PIECE_VALUES[targetPiece],
-                                    pos: getSquareName(r, c)
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (newAttacks.length > 0) {
-                const sorted = newAttacks.sort((a, b) => b.value - a.value);
+            // Lookahead: best winning capture/threat available to us after this move
+            const ourOpp = evaluateTacticOpportunities(currentPlayer);
+            if (ourOpp.score > 0) {
                 items.push({
                     type: 'good',
-                    text: `🎯 תוקף ${sorted[0].piece} ב-${sorted[0].pos}`
+                    text: `🎯 מאפשר לתפוס ${ourOpp.piece} ב-${ourOpp.pos}`
                 });
-                score += Math.max(sorted[0].value * 10, 5);
-                if (newAttacks.length >= 2) {
+                if (ourOpp.count >= 2) {
                     items.push({
                         type: 'good',
-                        text: `🎭 פורק! תוקף ${newAttacks.length} כלים`
+                        text: `🎭 פורק! ${ourOpp.count} כלים בסכנה`
                     });
-                    score += 20;
                 }
+                score += ourOpp.score;
+            }
+
+            // Lookahead: best winning capture/threat available to opponent after this move
+            const theirOpp = evaluateTacticOpportunities(opponentColor);
+            if (theirOpp.score > 0) {
+                items.push({
+                    type: 'bad',
+                    text: `⚠️ מאפשר ליריב לתפוס ${theirOpp.piece} ב-${theirOpp.pos}`
+                });
+                score -= theirOpp.score;
             }
 
             // Check for discovered attacks
@@ -2437,11 +2425,12 @@
             if (scoreEl) {
                 if (moveScores.length > 0) {
                     var sc = moveScores[moveScores.length - 1];
-                    var lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : 'מהלך פיתוח';
+                    var lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : sc >= -9 ? 'מהלך פיתוח' : sc >= -29 ? 'מהלך חלש' : 'טעות!';
+                    var badgeColor = sc >= 10 ? '#3498db' : sc >= 1 ? '#27ae60' : sc >= -9 ? '#7f8c8d' : '#e74c3c';
                     scoreEl.style.display = 'block';
                     scoreEl.innerHTML =
                         '<span style="color:rgba(255,255,255,0.8);font-size:12px;">ציון מהלך: </span>' +
-                        '<span style="display:inline-block;padding:1px 7px;background:#3498db;color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + sc + '</span>' +
+                        '<span style="display:inline-block;padding:1px 7px;background:' + badgeColor + ';color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + sc + '</span>' +
                         ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + lbl + '</span>';
                 } else {
                     scoreEl.style.display = 'none';
