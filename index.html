@@ -2324,14 +2324,12 @@
             }
 
             if (newAttacks.length > 0) {
-                const valuable = newAttacks.filter(a => a.value >= 3).sort((a, b) => b.value - a.value);
-                if (valuable.length > 0) {
-                    items.push({
-                        type: 'good',
-                        text: `🎯 תוקף ${valuable[0].piece} ב-${valuable[0].pos}`
-                    });
-                    score += valuable[0].value * 3;
-                }
+                const sorted = newAttacks.sort((a, b) => b.value - a.value);
+                items.push({
+                    type: 'good',
+                    text: `🎯 תוקף ${sorted[0].piece} ב-${sorted[0].pos}`
+                });
+                score += Math.max(sorted[0].value * 3, 5);
                 if (newAttacks.length >= 2) {
                     items.push({
                         type: 'good',
