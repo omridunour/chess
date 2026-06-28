@@ -2434,15 +2434,11 @@
                 }
             }
 
-            // Show this player's own last move score (hide if they haven't moved yet)
+            // Show score of the most recent move (cleared on new game)
             var scoreEl = document.getElementById('coachMoveScore');
             if (scoreEl) {
-                var lastIdx = -1;
-                for (var i = moveHistory.length - 1; i >= 0; i--) {
-                    if ((currentPlayer === 'white') === (i % 2 === 0)) { lastIdx = i; break; }
-                }
-                if (lastIdx >= 0 && lastIdx < moveScores.length) {
-                    var sc = moveScores[lastIdx];
+                if (moveScores.length > 0) {
+                    var sc = moveScores[moveScores.length - 1];
                     var lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : 'מהלך פיתוח';
                     scoreEl.style.display = 'block';
                     scoreEl.innerHTML =
