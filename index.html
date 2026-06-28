@@ -525,7 +525,7 @@
             .mobile-tabs { order: 2; margin-top: 30px; }
             .left-panels { order: 3; height: auto; overflow-y: visible; border-left: none; }
             /* Board container: JS will set board size via width+height */
-            .board-container { height: auto; padding: 2px 8px 1px 30px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
+            .board-container { height: auto; padding: 2px 8px 1px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 4px 10px; margin-bottom: 4px; }
             /* Board sized by JS — max-width as safety cap */
             .board-with-coords { max-width: 100%; aspect-ratio: 1; }
@@ -569,11 +569,7 @@
             .btn-profile { font-size: 12px; padding: 7px 10px; }
             .btn-signout { font-size: 12px; padding: 7px 10px; }
 
-            /* left:4px + coord-ranks:30px = 34px each side → chess squares visually centered */
-            .board-container { padding: 2px 34px 1px 4px; box-shadow: none; border-radius: 0; }
-            @supports (-webkit-touch-callout: none) {
-                .board-container { padding: 2px 38px 1px 4px; }
-            }
+            .board-container { padding: 2px 8px 1px 8px; box-shadow: none; border-radius: 0; }
             .square { font-size: clamp(22px, 9vw, 50px); }
             .turn-indicator { font-size: 13px; padding: 4px 8px; margin-bottom: 4px; }
             .status-message { font-size: 15px; padding: 10px; }
