@@ -456,6 +456,24 @@
             margin-left: 5px;
         }
 
+        .move-half {
+            margin-left: 6px;
+            white-space: nowrap;
+        }
+
+        .move-score {
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 4px;
+            padding: 1px 3px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+
+        .move-score.positive { color: #27ae60; }
+        .move-score.negative { color: #e74c3c; }
+        .move-score.neutral  { color: #7f8c8d; }
+
         .controls {
             display: flex;
             gap: 10px;
@@ -1067,6 +1085,18 @@
             padding: 20px;
         }
 
+        .move-score-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 7px 12px;
+            margin-top: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
         .player-analysis {
             margin-bottom: 15px;
         }
@@ -1283,19 +1313,10 @@
             <div class="mobile-panel active" id="panel-coach">
             <div class="coach-panel">
                 <h3>🎓 המאמן שלך</h3>
-                
-                <!-- White Player Analysis -->
                 <div class="player-analysis">
-                    <div class="player-analysis-header white-player">♔ שחקן לבן</div>
-                    <div id="coachAnalysisWhite">
-                        <div class="coach-empty">ממתין למהלך...</div>
-                    </div>
-                </div>
-
-                <!-- Black Player Analysis -->
-                <div class="player-analysis">
-                    <div class="player-analysis-header black-player">♚ שחקן שחור</div>
-                    <div id="coachAnalysisBlack">
+                    <div id="coachPlayerHeader" class="player-analysis-header white-player">♔ שחקן לבן</div>
+                    <div id="coachMoveScore" style="display:none;padding:7px 10px;background:rgba(0,0,0,0.3);border-radius:6px;margin-bottom:8px;"></div>
+                    <div id="coachAnalysis">
                         <div class="coach-empty">ממתין למהלך...</div>
                     </div>
                 </div>
@@ -1754,6 +1775,7 @@
         let selectedSquare = null;
         let currentPlayer = 'white';
         let moveHistory = [];
+        let moveScores = [];
         let gameHistory = []; // For undo functionality
 
         // Castling rights
@@ -1836,6 +1858,10 @@
                 }
             }
 
+            // Score this move before board changes
+            var _plannedScore = 0;
+            try { _plannedScore = analyzePlannedMove(fromRow, fromCol, toRow, toCol).score; } catch(e) {}
+
             // Save state for undo
             gameHistory.push({
                 board: JSON.parse(JSON.stringify(board)),
@@ -1902,7 +1928,21 @@
             // Record move
             const moveNotation = getMoveNotation(fromRow, fromCol, toRow, toCol, piece, capturedPiece);
             moveHistory.push(moveNotation);
+            moveScores.push(_plannedScore);
             updateMoveHistory();
+
+            // Update ציון מהלך directly — independent of coach analysis chain
+            try {
+                var _scoreEl = document.getElementById('coachMoveScore');
+                if (_scoreEl) {
+                    var _sl = _plannedScore >= 30 ? 'מצוין' : _plannedScore >= 10 ? 'טוב' : _plannedScore >= 1 ? 'בסדר' : 'מהלך פיתוח';
+                    _scoreEl.style.display = 'block';
+                    _scoreEl.innerHTML =
+                        '<span style="color:rgba(255,255,255,0.8);font-size:12px;">ציון מהלך: </span>' +
+                        '<span style="display:inline-block;padding:1px 7px;background:#3498db;color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + _plannedScore + '</span>' +
+                        ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + _sl + '</span>';
+                }
+            } catch(e) {}
 
             // Switch player
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
@@ -2395,15 +2435,23 @@
         }
 
         function updateCoachAnalysis() {
-            // Analyze for both players
-            analyzeForPlayer('white', 'coachAnalysisWhite');
-            analyzeForPlayer('black', 'coachAnalysisBlack');
+            var header = document.getElementById('coachPlayerHeader');
+            if (header) {
+                if (currentPlayer === 'white') {
+                    header.className = 'player-analysis-header white-player';
+                    header.textContent = '♔ שחקן לבן';
+                } else {
+                    header.className = 'player-analysis-header black-player';
+                    header.textContent = '♚ שחקן שחור';
+                }
+            }
+            analyzeForPlayer(currentPlayer, 'coachAnalysis');
         }
 
         function analyzeForPlayer(player, elementId) {
             const coachDiv = document.getElementById(elementId);
             if (!coachDiv) return;
-            
+
             const messages = [];
             const opponentColor = player === 'white' ? 'black' : 'white';
 
@@ -2557,12 +2605,14 @@
 
             // Render messages
             if (messages.length > 0) {
-                coachDiv.innerHTML = messages.map(msg => 
+                coachDiv.innerHTML = messages.map(msg =>
                     `<div class="coach-message ${msg.type}">${msg.text}</div>`
                 ).join('');
             } else {
                 coachDiv.innerHTML = '<div class="coach-empty">מנתח...</div>';
             }
+
+            // ציון מהלך — append move score for this player's last move
         }
 
         function analyzeOpponentNextMove(opponentColor) {
@@ -3118,6 +3168,11 @@
             }
         }
 
+        function formatMoveScore(score) {
+            if (score === undefined || score === null) return '';
+            return '<span class="recommendation-score" style="font-size:10px;padding:1px 5px;margin-right:3px;">' + score + '</span>';
+        }
+
         function updateMoveHistory() {
             const moveHistoryDiv = document.getElementById('moveHistory');
             if (moveHistory.length === 0) {
@@ -3129,11 +3184,13 @@
             for (let i = 0; i < moveHistory.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const whiteMove = moveHistory[i];
-                const blackMove = moveHistory[i + 1] || '';
-                
+                const blackMove = moveHistory[i + 1];
+                const whiteScore = formatMoveScore(moveScores[i]);
+                const blackScore = blackMove ? formatMoveScore(moveScores[i + 1]) : '';
+
                 html += `<div class="move-item">
                     <span class="move-number">${moveNum}.</span>
-                    ${whiteMove} ${blackMove}
+                    <span class="move-half">${whiteMove}${whiteScore}</span>${blackMove ? `<span class="move-half">${blackMove}${blackScore}</span>` : ''}
                 </div>`;
             }
             moveHistoryDiv.innerHTML = html;
@@ -3229,7 +3286,8 @@
             currentPlayer = lastState.currentPlayer;
 
             moveHistory.pop();
-            
+            moveScores.pop();
+
             selectedSquare = null;
             clearHighlights();
             initBoard();
@@ -3251,6 +3309,7 @@
             selectedSquare = null;
             currentPlayer = 'white';
             moveHistory = [];
+            moveScores = [];
             gameHistory = [];
 
             castlingRights = {
@@ -3266,6 +3325,8 @@
             initBoard();
             updateMoveHistory();
             document.getElementById('statusMessage').innerHTML = '';
+            var _r = document.getElementById('coachMoveScore');
+            if (_r) _r.style.display = 'none';
         }
 
         // Initialize the game
@@ -3524,6 +3585,7 @@
             castlingRights = data.castlingRights;
             enPassantTarget = data.enPassantTarget;
             moveHistory = data.moveHistory || [];
+            moveScores = [];
 
             selectedSquare = null;
             clearHighlights();
