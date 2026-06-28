@@ -1931,18 +1931,6 @@
             moveScores.push(_plannedScore);
             updateMoveHistory();
 
-            // Update ציון מהלך directly — independent of coach analysis chain
-            try {
-                var _scoreEl = document.getElementById('coachMoveScore');
-                if (_scoreEl) {
-                    var _sl = _plannedScore >= 30 ? 'מצוין' : _plannedScore >= 10 ? 'טוב' : _plannedScore >= 1 ? 'בסדר' : 'מהלך פיתוח';
-                    _scoreEl.style.display = 'block';
-                    _scoreEl.innerHTML =
-                        '<span style="color:rgba(255,255,255,0.8);font-size:12px;">ציון מהלך: </span>' +
-                        '<span style="display:inline-block;padding:1px 7px;background:#3498db;color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + _plannedScore + '</span>' +
-                        ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + _sl + '</span>';
-                }
-            } catch(e) {}
 
             // Switch player
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
@@ -2445,6 +2433,27 @@
                     header.textContent = '♚ שחקן שחור';
                 }
             }
+
+            // Show this player's own last move score (hide if they haven't moved yet)
+            var scoreEl = document.getElementById('coachMoveScore');
+            if (scoreEl) {
+                var lastIdx = -1;
+                for (var i = moveHistory.length - 1; i >= 0; i--) {
+                    if ((currentPlayer === 'white') === (i % 2 === 0)) { lastIdx = i; break; }
+                }
+                if (lastIdx >= 0 && lastIdx < moveScores.length) {
+                    var sc = moveScores[lastIdx];
+                    var lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : 'מהלך פיתוח';
+                    scoreEl.style.display = 'block';
+                    scoreEl.innerHTML =
+                        '<span style="color:rgba(255,255,255,0.8);font-size:12px;">ציון מהלך: </span>' +
+                        '<span style="display:inline-block;padding:1px 7px;background:#3498db;color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + sc + '</span>' +
+                        ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + lbl + '</span>';
+                } else {
+                    scoreEl.style.display = 'none';
+                }
+            }
+
             analyzeForPlayer(currentPlayer, 'coachAnalysis');
         }
 
