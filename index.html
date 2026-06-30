@@ -1776,6 +1776,7 @@
         let currentPlayer = 'white';
         let moveHistory = [];
         let moveScores = [];
+        let moveExplanations = [];
         let gameHistory = []; // For undo functionality
 
         // Castling rights
@@ -1859,8 +1860,12 @@
             }
 
             // Score this move before board changes
-            var _plannedScore = 0;
-            try { _plannedScore = analyzePlannedMove(fromRow, fromCol, toRow, toCol).score; } catch(e) {}
+            var _plannedScore = 0, _plannedExplanation = '';
+            try {
+                var _planned = analyzePlannedMove(fromRow, fromCol, toRow, toCol);
+                _plannedScore = _planned.score;
+                _plannedExplanation = generateMoveExplanation(_planned.items, _planned.score);
+            } catch(e) {}
 
             // Save state for undo
             gameHistory.push({
@@ -1929,6 +1934,7 @@
             const moveNotation = getMoveNotation(fromRow, fromCol, toRow, toCol, piece, capturedPiece);
             moveHistory.push(moveNotation);
             moveScores.push(_plannedScore);
+            moveExplanations.push(_plannedExplanation);
             updateMoveHistory();
 
 
@@ -2224,6 +2230,48 @@
             tooltip.classList.remove('show');
         }
 
+        function generateMoveExplanation(items, score) {
+            const hasCaptured = items.some(i => i.type === 'good' && i.text.includes('תופס '));
+            const hasCheck = items.some(i => i.text.includes('שח'));
+            const hasFork = items.some(i => i.text.includes('פורק'));
+            const ourThreats = items.filter(i => i.type === 'good' && i.text.includes('מאפשר לתפוס'));
+            const theirThreats = items.filter(i => i.type === 'bad' && i.text.includes('מאפשר ליריב'));
+            const escapedDanger = items.some(i => i.text.includes('מסכנה'));
+            const centerControl = items.some(i => i.text.includes('מרכז'));
+
+            var positives = [], negatives = [];
+
+            if (hasCaptured) positives.push('תפסת כלי יריב');
+            if (hasCheck) positives.push('נתת שח למלך היריב');
+            if (hasFork) positives.push('יצרת פורק — תקפת מספר כלים בו-זמנית');
+            else if (ourThreats.length === 1) positives.push('יצרת איום חדש על כלי יריב');
+            else if (ourThreats.length > 1) positives.push('יצרת ' + ourThreats.length + ' איומים חדשים בו-זמנית');
+            if (escapedDanger) positives.push('הצלת כלי מסכנה');
+            if (centerControl && positives.length === 0) positives.push('שלטת במרכז הלוח');
+
+            if (theirThreats.length === 1) negatives.push('השארת כלי חשוף לתקיפה');
+            else if (theirThreats.length > 1) negatives.push('השארת ' + theirThreats.length + ' כלים חשופים לתקיפה');
+
+            if (positives.length === 0 && negatives.length === 0) {
+                return 'מהלך פיתוח — לא נוצרו איומים מיידיים';
+            }
+            var parts = [];
+            if (positives.length > 0) parts.push(positives.join(' ו'));
+            if (negatives.length > 0) parts.push('אבל ' + negatives.join(' ו'));
+            return parts.join(', ') + '.';
+        }
+
+        document.addEventListener('click', function() {
+            var t = document.getElementById('scoreExplanationTooltip');
+            if (t) t.style.display = 'none';
+        });
+
+        function toggleScoreTooltip(event) {
+            event.stopPropagation();
+            var t = document.getElementById('scoreExplanationTooltip');
+            if (t) t.style.display = t.style.display === 'none' ? 'block' : 'none';
+        }
+
         function evaluateTacticOpportunities(attackingPlayer) {
             const defendingPlayer = attackingPlayer === 'white' ? 'black' : 'white';
             let totalScore = 0;
@@ -2420,11 +2468,15 @@
                     var sc = moveScores[moveScores.length - 1];
                     var lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : sc >= -9 ? 'מהלך פיתוח' : sc >= -29 ? 'מהלך חלש' : 'טעות!';
                     var badgeColor = sc >= 10 ? '#3498db' : sc >= 1 ? '#27ae60' : sc >= -9 ? '#7f8c8d' : '#e74c3c';
+                    var explanation = moveExplanations.length > 0 ? moveExplanations[moveExplanations.length - 1] : '';
                     scoreEl.style.display = 'block';
                     scoreEl.innerHTML =
+                        '<div style="position:relative;cursor:pointer;" onclick="toggleScoreTooltip(event)">' +
                         '<span style="color:rgba(255,255,255,0.8);font-size:12px;">ציון מהלך: </span>' +
                         '<span style="display:inline-block;padding:1px 7px;background:' + badgeColor + ';color:white;border-radius:3px;font-weight:bold;font-size:13px;">' + sc + '</span>' +
-                        ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + lbl + '</span>';
+                        ' <span style="color:rgba(255,255,255,0.7);font-size:12px;">' + lbl + ' ▲</span>' +
+                        (explanation ? '<div id="scoreExplanationTooltip" style="display:none;position:absolute;bottom:calc(100% + 8px);right:0;left:0;background:#1a252f;border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 12px;font-size:12px;color:rgba(255,255,255,0.88);line-height:1.6;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,0.5);text-align:right;">' + explanation + '</div>' : '') +
+                        '</div>';
                 } else {
                     scoreEl.style.display = 'none';
                 }
@@ -3272,6 +3324,7 @@
 
             moveHistory.pop();
             moveScores.pop();
+            moveExplanations.pop();
 
             selectedSquare = null;
             clearHighlights();
@@ -3295,6 +3348,7 @@
             currentPlayer = 'white';
             moveHistory = [];
             moveScores = [];
+            moveExplanations = [];
             gameHistory = [];
 
             castlingRights = {
@@ -3571,6 +3625,7 @@
             enPassantTarget = data.enPassantTarget;
             moveHistory = data.moveHistory || [];
             moveScores = [];
+            moveExplanations = [];
 
             selectedSquare = null;
             clearHighlights();
