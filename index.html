@@ -52,6 +52,14 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            overflow: hidden;
+            max-height: 8px;
+            transition: max-height 0.22s ease;
+            cursor: pointer;
+        }
+
+        .header:hover {
+            max-height: 60px;
         }
 
         .header h1 {
