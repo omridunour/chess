@@ -78,6 +78,74 @@
             display: contents;
         }
 
+        @media (min-width: 1201px) {
+            .header {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                width: 148px;
+                background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+                flex-direction: column;
+                padding: 16px 10px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                box-shadow: 2px 0 16px rgba(0,0,0,0.4);
+                max-height: none;
+                transition: none;
+                cursor: default;
+            }
+            .header:hover { max-height: none; }
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                gap: 8px;
+            }
+            body { padding-left: 148px; }
+            .header .btn,
+            .header .mode-btn {
+                color: white !important;
+                background: rgba(255,255,255,0.15) !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
+                font-size: 12px;
+                padding: 9px 8px;
+                width: 100%;
+                border-radius: 6px;
+                box-shadow: none;
+                transform: none !important;
+            }
+            .header .btn:hover,
+            .header .mode-btn:hover {
+                background: rgba(255,255,255,0.28) !important;
+            }
+            .header .btn-danger {
+                background: rgba(231,76,60,0.85) !important;
+                border-color: transparent !important;
+            }
+            .header .btn-danger:hover { background: #e74c3c !important; }
+            .header .mode-btn.active {
+                background: rgba(255,255,255,0.32) !important;
+                border-color: rgba(255,255,255,0.5) !important;
+            }
+            .header .btn-google {
+                background: white !important;
+                color: #444 !important;
+                border-color: rgba(255,255,255,0.4) !important;
+                width: 100%;
+            }
+            .header .btn-signout {
+                color: white !important;
+                background: rgba(255,255,255,0.15) !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
+                font-size: 12px;
+                padding: 9px 8px;
+                width: 100%;
+                border-radius: 6px;
+            }
+            .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
+        }
+
         .left-panels {
             display: flex;
             flex-direction: column;
@@ -3925,21 +3993,23 @@
             const boardEl = document.querySelector('.board-with-coords');
             if (!boardEl) return;
 
-            // Keep CSS variable in sync with actual header height
-            const headerEl = document.querySelector('.header');
-            if (headerEl) {
-                document.documentElement.style.setProperty('--header-h', headerEl.offsetHeight + 'px');
-            }
-
             const viewH = (window.visualViewport && window.visualViewport.height > 100)
                 ? window.visualViewport.height
                 : window.innerHeight;
             const boardTop = boardEl.getBoundingClientRect().top;
 
             if (window.innerWidth > 1200) {
+                // Sidebar layout: header is on the side, not top — no vertical space consumed
+                document.documentElement.style.setProperty('--header-h', '0px');
                 boardEl.style.width = '';
                 boardEl.style.height = '';
                 return;
+            }
+
+            // Mobile: measure actual top header height
+            const headerEl = document.querySelector('.header');
+            if (headerEl) {
+                document.documentElement.style.setProperty('--header-h', headerEl.offsetHeight + 'px');
             }
 
             const tabsEl = document.getElementById('mobileTabs');
