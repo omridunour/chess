@@ -144,11 +144,12 @@
                 border-radius: 6px;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
-            /* Sidebar button order: mode buttons top, disconnect middle, game controls bottom */
+            /* Sidebar button order: mode buttons, game controls, disconnect last */
             .header .mode-btn { order: 1; }
-            #authSection { order: 2; }
-            .header .btn-secondary { order: 3; }
-            .header .btn-danger { order: 4; }
+            .header .btn-secondary { order: 2; }
+            .header .btn-danger { order: 3; }
+            #authSection { order: 4; width: 100%; }
+            #authLoggedIn, #authLoggedOut { flex-direction: column !important; align-items: stretch !important; gap: 4px !important; width: 100%; }
         }
 
         .left-panels {
