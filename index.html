@@ -1218,12 +1218,12 @@
                         <button class="btn-guest" onclick="signInAsGuest()">🎮 <span class="btn-label">שחק </span>כאורח</button>
                     </div>
                     <div id="authLoggedIn" style="display:none; align-items:center; gap:10px;">
-                        <div class="auth-user">
+                        <div class="auth-user" id="authUserDisplay" style="cursor:default;">
                             <span class="auth-status-dot"></span>
                             <img id="userPhoto" src="" alt="תמונת פרופיל" onerror="this.style.display='none'">
                             <span id="userName">משתמש</span>
                         </div>
-                        <button class="btn-profile" id="profileBtn" onclick="openProfile()">🏆 <span class="btn-label">הפרופיל שלי</span></button>
+                        <button class="btn-profile" id="profileBtn" onclick="openProfile()" style="display:none;">🏆 <span class="btn-label">הפרופיל שלי</span></button>
                         <button class="btn-google" id="linkGoogleBtn" onclick="linkGoogleAccount()" style="display:none;font-size:12px;padding:7px 10px;">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -1575,7 +1575,19 @@
                     document.getElementById('userPhoto').src = user.photoURL;
                 }
                 if (linkBtn) linkBtn.style.display = isAnon ? 'flex' : 'none';
-                if (profileBtn) profileBtn.style.display = isAnon ? 'none' : 'flex';
+                if (profileBtn) profileBtn.style.display = 'none';
+                const authUserDisplay = document.getElementById('authUserDisplay');
+                if (authUserDisplay) {
+                    if (!isAnon) {
+                        authUserDisplay.style.cursor = 'pointer';
+                        authUserDisplay.onclick = openProfile;
+                        authUserDisplay.title = 'פתח פרופיל';
+                    } else {
+                        authUserDisplay.style.cursor = 'default';
+                        authUserDisplay.onclick = null;
+                        authUserDisplay.title = '';
+                    }
+                }
             } else {
                 loggedOut.style.display = 'flex';
                 loggedIn.style.display = 'none';
@@ -3908,22 +3920,26 @@
         }
 
         function fitBoardToViewport() {
-            if (window.innerWidth > 1200) {
-                const board = document.querySelector('.board-with-coords');
-                if (board) { board.style.width = ''; board.style.height = ''; }
-                return;
-            }
             const boardEl = document.querySelector('.board-with-coords');
-            const tabsEl = document.getElementById('mobileTabs');
             if (!boardEl) return;
 
             const viewH = (window.visualViewport && window.visualViewport.height > 100)
                 ? window.visualViewport.height
                 : window.innerHeight;
-
             const boardTop = boardEl.getBoundingClientRect().top;
-            const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
 
+            if (window.innerWidth > 1200) {
+                // Desktop: constrain board height to fit viewport
+                const availH = viewH - boardTop - 20;
+                const availW = boardEl.parentElement.clientWidth;
+                const size = Math.max(200, Math.min(availH, availW));
+                boardEl.style.width = size + 'px';
+                boardEl.style.height = size + 'px';
+                return;
+            }
+
+            const tabsEl = document.getElementById('mobileTabs');
+            const tabsH = tabsEl ? tabsEl.offsetHeight : 0;
             const availH = viewH - boardTop - tabsH - 2;
             const availW = boardEl.parentElement.clientWidth;
             const size = Math.max(50, Math.min(availH, availW));
