@@ -144,6 +144,11 @@
                 border-radius: 6px;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
+            /* Sidebar button order: mode buttons top, disconnect middle, game controls bottom */
+            .header .mode-btn { order: 1; }
+            #authSection { order: 2; }
+            .header .btn-secondary { order: 3; }
+            .header .btn-danger { order: 4; }
         }
 
         .left-panels {
@@ -207,8 +212,8 @@
             grid-template-rows: 1fr 30px;
             gap: 0;
             width: 100%;
-            max-width: 90vh;
-            max-height: calc(100vh - var(--header-h, 140px) - 8px);
+            max-width: 94vh;
+            max-height: calc(100vh - var(--header-h, 140px) - 2px);
             aspect-ratio: 1;
         }
 
