@@ -1183,6 +1183,18 @@
             background: rgba(255,255,255,0.2);
             border-radius: 5px;
         }
+
+        .tooltip-explanation {
+            margin-top: 8px;
+            padding: 7px 10px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 6px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.5;
+            text-align: right;
+            border-right: 3px solid rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body>
@@ -2190,19 +2202,24 @@
         function showMovePreview(fromRow, fromCol, toRow, toCol, event) {
             const tooltip = document.getElementById('movePreviewTooltip');
             const analysis = analyzePlannedMove(fromRow, fromCol, toRow, toCol);
-            
+
             // Build tooltip content
             let content = `<div class="tooltip-header">📊 ניתוח מהלך: ${getSquareName(fromRow, fromCol)} → ${getSquareName(toRow, toCol)}</div>`;
-            
+
             analysis.items.forEach(item => {
                 content += `<div class="tooltip-item ${item.type}">${item.text}</div>`;
             });
 
-            if (analysis.score !== null) {
-                const scoreText = analysis.score > 0 ? `+${analysis.score}` : `${analysis.score}`;
-                const scoreColor = analysis.score > 0 ? '#2ecc71' : (analysis.score < 0 ? '#e74c3c' : '#95a5a6');
-                content += `<div class="tooltip-score" style="color: ${scoreColor}">ציון: ${scoreText}</div>`;
-            }
+            const sc = analysis.score;
+            const lbl = sc >= 30 ? 'מצוין' : sc >= 10 ? 'טוב' : sc >= 1 ? 'בסדר' : sc >= -9 ? 'מהלך פיתוח' : sc >= -29 ? 'מהלך חלש' : 'טעות!';
+            const badgeColor = sc >= 10 ? '#3498db' : sc >= 1 ? '#27ae60' : sc >= -9 ? '#7f8c8d' : '#e74c3c';
+            const explanation = generateMoveExplanation(analysis.items, sc);
+
+            content += `<div class="tooltip-score">`;
+            content += `<span style="display:inline-block;padding:2px 9px;background:${badgeColor};color:white;border-radius:4px;font-weight:bold;font-size:14px;">${sc}</span>`;
+            content += ` <span style="font-size:12px;opacity:0.85;">${lbl}</span>`;
+            content += `</div>`;
+            content += `<div class="tooltip-explanation">${explanation}</div>`;
 
             tooltip.innerHTML = content;
             tooltip.classList.add('show');
