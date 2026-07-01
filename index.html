@@ -148,8 +148,20 @@
                 text-align: center;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
-            /* Board starts at top, not centered — keeps boardTop stable for JS sizing */
-            .board-container { position: relative; justify-content: flex-start; }
+            /* Grid: turn indicator takes natural height, board fills all remaining space */
+            .board-container {
+                display: grid;
+                grid-template-rows: auto 1fr;
+                justify-items: center;
+                align-items: start;
+                position: relative;
+                overflow: hidden;
+                box-sizing: border-box;
+            }
+            .board-with-coords {
+                max-height: 100%;
+                max-width: 100%;
+            }
             #statusMessage {
                 position: absolute;
                 top: 40px;
@@ -4045,13 +4057,10 @@
             const boardTop = boardEl.getBoundingClientRect().top;
 
             if (window.innerWidth > 1200) {
-                // Sidebar layout: size board to exactly fit remaining vertical space
+                // Desktop: CSS grid handles sizing, clear any JS-set inline sizes
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 10;
-                const availW = boardEl.parentElement.clientWidth;
-                const size = Math.max(50, Math.min(availH, availW));
-                boardEl.style.width = size + 'px';
-                boardEl.style.height = size + 'px';
+                boardEl.style.width = '';
+                boardEl.style.height = '';
                 return;
             }
 
