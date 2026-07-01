@@ -3350,12 +3350,13 @@
             const isMyTurn = gameMode === 'local' ||
                 (gameMode === 'computer' && currentPlayer === 'white') ||
                 (gameMode === 'online' && currentPlayer === playerColor);
-            const youSuffix = isMyTurn ? ' (אתה)' : '';
+            const isComputerTurn = gameMode === 'computer' && currentPlayer === 'black';
+            const suffix = isMyTurn ? ' (אתה)' : isComputerTurn ? ' (מחשב)' : '';
             if (currentPlayer === 'white') {
-                indicator.textContent = 'תור הלבן לשחק' + youSuffix;
+                indicator.textContent = 'תור הלבן לשחק' + suffix;
                 indicator.className = 'turn-indicator white';
             } else {
-                indicator.textContent = 'תור השחור לשחק' + youSuffix;
+                indicator.textContent = 'תור השחור לשחק' + suffix;
                 indicator.className = 'turn-indicator black';
             }
         }
