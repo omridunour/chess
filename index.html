@@ -115,8 +115,7 @@
                 box-shadow: none;
                 transform: none !important;
                 white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                text-align: center;
             }
             .header .btn:hover,
             .header .mode-btn:hover {
@@ -146,12 +145,15 @@
                 width: 100%;
                 border-radius: 6px;
                 white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                text-align: center;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
-            /* Sidebar button order: mode buttons, game controls, disconnect last */
+            /* Sidebar button order: mode buttons, רמה selector, game controls, disconnect last */
             .header .mode-btn { order: 1; }
+            #computerControls { order: 1; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px 10px !important; margin: 0 !important; color: white; font-size: 11px; }
+            #computerControls span { color: rgba(255,255,255,0.85); font-size: 11px; display: block; margin-bottom: 4px; }
+            #computerControls label { color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 4px; font-size: 11px; }
+            #computerControls select { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 4px; font-size: 11px; }
             .header .btn-secondary { order: 2; }
             .header .btn-danger { order: 3; }
             #authSection { order: 4; width: 100%; }
@@ -1334,24 +1336,23 @@
                 <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 <span class="btn-label">נגד </span>מחשב</button>
                 <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
             </div>
+            <!-- Computer Controls - sits between mode buttons and game controls -->
+            <div class="online-controls" id="computerControls" style="display: none;">
+                <label>רמה:
+                    <select id="aiDepth" style="margin-right:4px;padding:4px 8px;border-radius:6px;border:1px solid #ccc;">
+                        <option value="1">קל</option>
+                        <option value="2" selected>בינוני</option>
+                        <option value="3">קשה</option>
+                    </select>
+                </label>
+                <span id="computerThinking" style="display:none;color:#e67e22;font-weight:600;">🤔 המחשב חושב...</span>
+            </div>
+
             <div class="header-row">
                 <!-- Game Controls -->
                 <button class="btn btn-secondary" onclick="undoMove()">↶ בטל מהלך</button>
                 <button class="btn btn-danger" onclick="resetGame()">🔄 משחק חדש</button>
             </div>
-        </div>
-
-        <!-- Computer Controls -->
-        <div class="online-controls" id="computerControls" style="display: none; margin-top: 10px;">
-            <span style="font-weight:600;">🤖 משחק נגד מחשב — אתה לבן, המחשב שחור</span>
-            <label style="margin-right:12px;">רמה:
-                <select id="aiDepth" style="margin-right:4px;padding:4px 8px;border-radius:6px;border:1px solid #ccc;">
-                    <option value="1">קל</option>
-                    <option value="2" selected>בינוני</option>
-                    <option value="3">קשה</option>
-                </select>
-            </label>
-            <span id="computerThinking" style="display:none;color:#e67e22;font-weight:600;">🤔 המחשב חושב...</span>
         </div>
 
         <!-- Online Controls -->
