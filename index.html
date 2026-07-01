@@ -4249,7 +4249,7 @@
                     const containerEl = boardEl.parentElement;
                     if (!turnEl || !containerEl) return;
                     const turnBottom = turnEl.getBoundingClientRect().bottom;
-                    const availH = viewH - turnBottom - 4;
+                    const availH = viewH - turnBottom - 10;
                     const availW = containerEl.clientWidth - 16;
                     const size = Math.max(200, Math.min(availH, availW));
                     boardEl.style.width = size + 'px';
