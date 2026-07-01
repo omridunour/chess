@@ -148,6 +148,17 @@
                 text-align: center;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
+            /* Status message overlays the board so it doesn't push it down */
+            .board-container { position: relative; }
+            #statusMessage {
+                position: absolute;
+                top: 40px;
+                left: 0; right: 0;
+                display: flex;
+                justify-content: center;
+                z-index: 50;
+                pointer-events: none;
+            }
             /* Sidebar button order: mode buttons, רמה selector, game controls, disconnect last */
             .header .mode-btn { order: 1; }
             #computerControls { order: 1; background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px 10px !important; margin: 0 !important; color: white; font-size: 11px; }
