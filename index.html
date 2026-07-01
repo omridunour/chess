@@ -1577,8 +1577,7 @@
 
                 <div id="gameCodeDisplay" class="lobby-section" style="display:none;">
                     <div class="lobby-code-label">קוד הלובי שלך</div>
-                    <div class="game-code" id="gameCode"></div>
-                    <div class="lobby-code-hint">שתף את הקוד עם השחקן השני</div>
+                    <div class="game-code" id="gameCode" onclick="copyGameCode(this)" title="לחץ להעתקה" style="cursor:pointer;"></div>
                     <div id="pendingRequests" class="lobby-pending" style="display:none;">
                         <div class="lobby-pending-title">📩 בקשות הצטרפות:</div>
                         <div id="pendingRequestsList"></div>
@@ -3781,6 +3780,16 @@
 
         function generateGameCode() {
             return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function copyGameCode(el) {
+            const code = el.textContent.trim();
+            if (!code) return;
+            navigator.clipboard.writeText(code).then(() => {
+                const orig = el.textContent;
+                el.textContent = '✓ הועתק!';
+                setTimeout(() => { el.textContent = orig; }, 1500);
+            });
         }
 
         function createOnlineGame() {
