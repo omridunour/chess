@@ -161,15 +161,12 @@
                 height: 100%;
             }
             .board-with-coords {
-                flex: 1;
-                min-height: 0;
-                aspect-ratio: 1;
                 max-width: 100%;
-                width: auto;
+                /* width + height set explicitly by JS */
             }
             .coord-label { color: #5d6d7e; font-size: 10px; font-weight: 600; }
             .board-with-coords { grid-template-rows: 1fr 20px; grid-template-columns: 1fr 20px; }
-            .turn-indicator { font-size: 12px; padding: 2px 10px; margin: 0 0 1px; border-radius: 20px; display: inline-block; }
+            .turn-indicator { font-size: 12px; padding: 2px 10px; margin: 0; border-radius: 20px; display: inline-block; }
             #statusMessage {
                 position: absolute;
                 top: 40px;
@@ -4247,6 +4244,17 @@
                 document.documentElement.style.setProperty('--header-h', '0px');
                 boardEl.style.width = '';
                 boardEl.style.height = '';
+                requestAnimationFrame(() => {
+                    const turnEl = document.getElementById('turnIndicator');
+                    const containerEl = boardEl.parentElement;
+                    if (!turnEl || !containerEl) return;
+                    const turnBottom = turnEl.getBoundingClientRect().bottom;
+                    const availH = viewH - turnBottom - 4;
+                    const availW = containerEl.clientWidth - 16;
+                    const size = Math.max(200, Math.min(availH, availW));
+                    boardEl.style.width = size + 'px';
+                    boardEl.style.height = size + 'px';
+                });
                 return;
             }
 
