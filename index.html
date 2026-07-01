@@ -1572,7 +1572,7 @@
                 </div>
 
                 <div id="onlineCreateSection" class="lobby-section">
-                    <button class="lobby-btn-create" onclick="createOnlineGame()">➕ צור לובי חדש</button>
+                    <button class="lobby-btn-create" onclick="createOnlineGame()">התחל משחק</button>
                 </div>
 
                 <div id="gameCodeDisplay" class="lobby-section" style="display:none;">
@@ -1585,7 +1585,7 @@
                     </div>
                 </div>
 
-                <div id="publicLobbiesSection" class="lobby-section">
+                <div id="publicLobbiesSection" class="lobby-section" style="display:none;">
                     <div class="lobby-section-header">
                         <span class="lobby-section-label">לובי פתוחים</span>
                         <button onclick="loadPublicLobbies()" class="lobby-refresh-btn" title="רענן">↻</button>
@@ -3743,7 +3743,7 @@
                         <button onclick="joinPublicLobby('${code}')">הצטרף ▶</button>
                     </div>`;
                 }).join('');
-            }).catch(() => { listEl.textContent = 'שגיאה בטעינת לובי.'; });
+            }).catch(() => { /* suppress lobby load error */ });
         }
 
         function joinPublicLobby(code) {
