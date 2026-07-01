@@ -102,7 +102,7 @@
                 justify-content: flex-start;
                 gap: 8px;
             }
-            body { padding-left: 148px; }
+            body { padding-left: 148px; overflow: hidden; }
             .header .btn,
             .header .mode-btn {
                 color: white !important;
@@ -4047,7 +4047,7 @@
             if (window.innerWidth > 1200) {
                 // Sidebar layout: size board to exactly fit remaining vertical space
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 20;
+                const availH = viewH - boardTop - 36;
                 const availW = boardEl.parentElement.clientWidth;
                 const size = Math.max(50, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
