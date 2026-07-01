@@ -4047,7 +4047,7 @@
             if (window.innerWidth > 1200) {
                 // Sidebar layout: size board to exactly fit remaining vertical space
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 8;
+                const availH = viewH - boardTop - 20;
                 const availW = boardEl.parentElement.clientWidth;
                 const size = Math.max(50, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
