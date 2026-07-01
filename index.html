@@ -150,20 +150,25 @@
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
             /* Grid: turn indicator takes natural height, board fills all remaining space */
             .board-container {
-                display: grid;
-                grid-template-rows: auto 1fr;
-                justify-items: center;
-                align-items: start;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
                 position: relative;
-                overflow: hidden;
+                overflow: visible;
                 box-sizing: border-box;
+                padding: 6px 8px 8px;
             }
             .board-with-coords {
-                max-height: 100%;
+                flex: 1;
+                min-height: 0;
+                height: 100%;
+                width: auto;
                 max-width: 100%;
+                aspect-ratio: 1;
             }
             .coord-label { color: #5d6d7e; font-size: 11px; font-weight: 600; }
-            .turn-indicator { font-size: 13px; padding: 4px 12px; margin-bottom: 6px; border-radius: 20px; display: inline-block; }
+            .turn-indicator { font-size: 13px; padding: 4px 12px; margin-bottom: 4px; border-radius: 20px; display: inline-block; }
             #statusMessage {
                 position: absolute;
                 top: 40px;
