@@ -153,19 +153,19 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: flex-start;
+                justify-content: center;
                 position: relative;
                 overflow: visible;
                 box-sizing: border-box;
-                padding: 6px 8px 8px;
+                padding: 4px 8px;
             }
             .board-with-coords {
-                flex: 1;
-                min-height: 0;
-                height: 100%;
-                width: auto;
+                --bsize: min(calc(100vh - 48px), calc(100vw - 540px));
+                width: var(--bsize);
+                height: var(--bsize);
+                flex-shrink: 0;
                 max-width: 100%;
-                aspect-ratio: 1;
+                aspect-ratio: unset;
             }
             .coord-label { color: #5d6d7e; font-size: 11px; font-weight: 600; }
             .turn-indicator { font-size: 13px; padding: 4px 12px; margin-bottom: 4px; border-radius: 20px; display: inline-block; }
