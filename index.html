@@ -4028,10 +4028,13 @@
             const boardTop = boardEl.getBoundingClientRect().top;
 
             if (window.innerWidth > 1200) {
-                // Sidebar layout: header is on the side, not top — no vertical space consumed
+                // Sidebar layout: size board to exactly fit remaining vertical space
                 document.documentElement.style.setProperty('--header-h', '0px');
-                boardEl.style.width = '';
-                boardEl.style.height = '';
+                const availH = viewH - boardTop - 8;
+                const availW = boardEl.parentElement.clientWidth;
+                const size = Math.max(50, Math.min(availH, availW));
+                boardEl.style.width = size + 'px';
+                boardEl.style.height = size + 'px';
                 return;
             }
 
