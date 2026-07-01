@@ -17,7 +17,7 @@
         html {
             min-height: 100%;
             width: 100%;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         body {
@@ -153,11 +153,11 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
+                justify-content: flex-start;
                 position: relative;
                 overflow: visible;
                 box-sizing: border-box;
-                padding: 4px 8px;
+                padding: 0 8px;
             }
             .board-with-coords {
                 flex-shrink: 0;
@@ -165,7 +165,7 @@
                 aspect-ratio: unset;
             }
             .coord-label { color: #5d6d7e; font-size: 11px; font-weight: 600; }
-            .turn-indicator { font-size: 13px; padding: 4px 12px; margin-bottom: 4px; border-radius: 20px; display: inline-block; }
+            .turn-indicator { font-size: 12px; padding: 2px 10px; margin-bottom: 2px; border-radius: 20px; display: inline-block; }
             #statusMessage {
                 position: absolute;
                 top: 40px;
@@ -4241,7 +4241,7 @@
 
             if (window.innerWidth > 1200) {
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 8;
+                const availH = viewH - boardTop - 4;
                 const availW = boardEl.parentElement.clientWidth - 16;
                 const size = Math.max(200, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
