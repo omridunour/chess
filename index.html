@@ -155,17 +155,20 @@
                 align-items: center;
                 justify-content: flex-start;
                 position: relative;
-                overflow: visible;
+                overflow: hidden;
                 box-sizing: border-box;
-                padding: 0 8px;
+                padding: 0 8px 0;
+                height: 100%;
             }
             .board-with-coords {
-                flex-shrink: 0;
+                flex: 1;
+                min-height: 0;
+                aspect-ratio: 1;
                 max-width: 100%;
-                aspect-ratio: unset;
+                width: auto;
             }
             .coord-label { color: #5d6d7e; font-size: 11px; font-weight: 600; }
-            .turn-indicator { font-size: 12px; padding: 2px 10px; margin-bottom: 2px; border-radius: 20px; display: inline-block; }
+            .turn-indicator { font-size: 12px; padding: 2px 10px; margin: 2px 0; border-radius: 20px; display: inline-block; }
             #statusMessage {
                 position: absolute;
                 top: 40px;
@@ -4241,13 +4244,8 @@
 
             if (window.innerWidth > 1200) {
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const turnEl = document.getElementById('turnIndicator');
-                const turnH = turnEl ? turnEl.getBoundingClientRect().height : 20;
-                const availH = viewH - turnH - 6;
-                const availW = boardEl.parentElement.clientWidth - 16;
-                const size = Math.max(200, Math.min(availH, availW));
-                boardEl.style.width = size + 'px';
-                boardEl.style.height = size + 'px';
+                boardEl.style.width = '';
+                boardEl.style.height = '';
                 return;
             }
 
