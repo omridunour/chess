@@ -160,9 +160,6 @@
                 padding: 4px 8px;
             }
             .board-with-coords {
-                --bsize: min(calc(100vh - 48px), calc(100vw - 540px));
-                width: var(--bsize);
-                height: var(--bsize);
                 flex-shrink: 0;
                 max-width: 100%;
                 aspect-ratio: unset;
@@ -4243,10 +4240,12 @@
             const boardTop = boardEl.getBoundingClientRect().top;
 
             if (window.innerWidth > 1200) {
-                // Desktop: CSS grid handles sizing, clear any JS-set inline sizes
                 document.documentElement.style.setProperty('--header-h', '0px');
-                boardEl.style.width = '';
-                boardEl.style.height = '';
+                const availH = viewH - boardTop - 8;
+                const availW = boardEl.parentElement.clientWidth - 16;
+                const size = Math.max(200, Math.min(availH, availW));
+                boardEl.style.width = size + 'px';
+                boardEl.style.height = size + 'px';
                 return;
             }
 
