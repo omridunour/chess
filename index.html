@@ -759,10 +759,22 @@
             text-align: center;
         }
 
+        @keyframes checkToastAnim {
+            0%   { opacity: 0; transform: translateY(-8px) scale(0.95); }
+            12%  { opacity: 1; transform: translateY(0)   scale(1); }
+            75%  { opacity: 1; transform: translateY(0)   scale(1); }
+            100% { opacity: 0; transform: translateY(-8px) scale(0.95); }
+        }
         .status-check {
-            background: #ffe6e6;
-            color: #c0392b;
-            border: 2px solid #e74c3c;
+            background: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 22px;
+            font-size: 15px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            animation: checkToastAnim 2.5s ease forwards;
+            pointer-events: none;
         }
 
         .status-checkmate {
@@ -3390,6 +3402,11 @@
                 }
             } else if (inCheck) {
                 statusMessage.innerHTML = `<div class="status-message status-check">⚠️ שח למלך!</div>`;
+                clearTimeout(window._checkToastTimer);
+                window._checkToastTimer = setTimeout(() => {
+                    const el = document.getElementById('statusMessage');
+                    if (el && el.querySelector('.status-check')) el.innerHTML = '';
+                }, 2500);
             } else {
                 statusMessage.innerHTML = '';
             }
