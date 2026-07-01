@@ -1486,7 +1486,7 @@
         <!-- Right - Board -->
         <div class="right-board">
             <div class="board-container">
-                <div class="turn-indicator white" id="turnIndicator">תור הלבן לשחק (אתה)</div>
+                <div class="turn-indicator white" id="turnIndicator">תור הלבן לשחק</div>
                 <div id="statusMessage"></div>
                 <div class="board-with-coords">
                     <!-- Board -->
@@ -3347,7 +3347,7 @@
 
         function updateTurnIndicator() {
             const indicator = document.getElementById('turnIndicator');
-            const isMyTurn = gameMode === 'local' ||
+            const isMyTurn =
                 (gameMode === 'computer' && currentPlayer === 'white') ||
                 (gameMode === 'online' && currentPlayer === playerColor);
             const isComputerTurn = gameMode === 'computer' && currentPlayer === 'black';
