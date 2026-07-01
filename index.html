@@ -4241,7 +4241,9 @@
 
             if (window.innerWidth > 1200) {
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 4;
+                const turnEl = document.getElementById('turnIndicator');
+                const turnH = turnEl ? turnEl.getBoundingClientRect().height : 20;
+                const availH = viewH - turnH - 6;
                 const availW = boardEl.parentElement.clientWidth - 16;
                 const size = Math.max(200, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
