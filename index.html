@@ -148,8 +148,8 @@
                 text-align: center;
             }
             .header .btn-signout:hover { background: rgba(255,255,255,0.28) !important; }
-            /* Status message overlays the board so it doesn't push it down */
-            .board-container { position: relative; }
+            /* Board starts at top, not centered — keeps boardTop stable for JS sizing */
+            .board-container { position: relative; justify-content: flex-start; }
             #statusMessage {
                 position: absolute;
                 top: 40px;
@@ -4047,7 +4047,7 @@
             if (window.innerWidth > 1200) {
                 // Sidebar layout: size board to exactly fit remaining vertical space
                 document.documentElement.style.setProperty('--header-h', '0px');
-                const availH = viewH - boardTop - 36;
+                const availH = viewH - boardTop - 10;
                 const availW = boardEl.parentElement.clientWidth;
                 const size = Math.max(50, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
