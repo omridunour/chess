@@ -802,17 +802,7 @@
             border: 2px solid #ffc107;
         }
 
-        .online-controls {
-            background: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .online-controls h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
+        /* .online-controls removed — replaced by .online-lobby */
 
         .lobby-type-btn.active-type {
             outline: 3px solid #2c3e50;
@@ -1324,6 +1314,188 @@
             text-align: right;
             border-right: 3px solid rgba(255,255,255,0.3);
         }
+
+        /* ===== ONLINE LOBBY — sidebar-matched style ===== */
+        .online-lobby {
+            color: white;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+        .lobby-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 4px 0 6px;
+        }
+        /* Header hidden in sidebar — mode button already labels the context */
+        .lobby-header { display: none; }
+
+        .lobby-section {
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .lobby-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+        .lobby-section-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.4);
+        }
+        .lobby-refresh-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 2px;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        .lobby-refresh-btn:hover { color: white; }
+
+        /* Buttons match the sidebar button style */
+        .lobby-btn-create {
+            width: 100%;
+            padding: 9px 8px;
+            background: rgba(255,255,255,0.15) !important;
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: normal;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .lobby-btn-create:hover { background: rgba(255,255,255,0.25) !important; }
+
+        .lobby-code-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            margin-bottom: 3px;
+        }
+        .lobby-code-hint {
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            margin-top: 3px;
+        }
+        .lobby-pending { margin-top: 5px; }
+        .lobby-pending-title {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+
+        .lobby-list-empty {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            padding: 4px 0;
+        }
+
+        .lobby-divider {
+            text-align: center;
+            font-size: 10px;
+            color: rgba(255,255,255,0.25);
+            padding: 1px 0;
+        }
+
+        .lobby-join-row {
+            display: flex;
+            gap: 4px;
+            align-items: stretch;
+        }
+        .lobby-code-input {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 5px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: monospace;
+            outline: none;
+            transition: border-color 0.15s;
+            direction: ltr;
+            box-sizing: border-box;
+        }
+        .lobby-code-input::placeholder {
+            color: rgba(255,255,255,0.22);
+            letter-spacing: normal;
+            font-size: 10px;
+            font-weight: normal;
+            font-family: inherit;
+        }
+        .lobby-code-input:focus { border-color: rgba(52,152,219,0.6); }
+
+        .lobby-btn-join {
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+        .lobby-btn-join:hover { background: rgba(255,255,255,0.25); }
+
+        .lobby-waiting {
+            text-align: center;
+            padding: 7px 6px;
+            background: rgba(52,152,219,0.12);
+            border: 1px solid rgba(52,152,219,0.25);
+            border-radius: 6px;
+            color: rgba(255,255,255,0.65);
+            font-size: 11px;
+        }
+
+        .online-lobby .game-code {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,215,0,0.35);
+            border-radius: 6px;
+            color: #ffd700;
+            font-size: 16px;
+            letter-spacing: 4px;
+            padding: 8px 6px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .online-lobby .public-lobby-item {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            color: white;
+            font-size: 11px;
+            padding: 5px 7px;
+        }
+        .online-lobby .public-lobby-item button {
+            background: rgba(52,152,219,0.65);
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1391,50 +1563,48 @@
         </div>
 
         <!-- Online Controls -->
-        <div class="online-controls" id="onlineControls" style="display: none; margin-top: 15px;">
-            <h3>משחק מקוון</h3>
-
-            <!-- Create lobby section -->
-            <div id="onlineCreateSection" style="margin-bottom:12px;">
-                <button class="btn btn-primary" onclick="createOnlineGame()" style="width:100%;padding:13px;font-size:16px;border-radius:7px;">➕ צור לובי חדש</button>
-            </div>
-
-            <!-- Game code display (host view after creating) -->
-            <div id="gameCodeDisplay" style="display: none;">
-                <div style="font-size:13px;color:#7f8c8d;text-align:center;margin-bottom:4px;">קוד הלובי שלך:</div>
-                <div class="game-code" id="gameCode"></div>
-                <div style="font-size: 12px; color: #7f8c8d; text-align: center;">שתף את הקוד עם השחקן השני</div>
-                <!-- Pending join requests shown to host -->
-                <div id="pendingRequests" style="display:none; margin-top:10px;">
-                    <div style="font-weight:600; margin-bottom:6px;">📩 בקשות הצטרפות:</div>
-                    <div id="pendingRequestsList"></div>
+        <div id="onlineControls" class="online-lobby" style="display: none;">
+            <div class="lobby-inner">
+                <div class="lobby-header">
+                    <div class="lobby-icon">🌐</div>
+                    <h2 class="lobby-title">משחק מקוון</h2>
+                    <p class="lobby-subtitle">צור לובי חדש או הצטרף למשחק קיים</p>
                 </div>
-            </div>
 
-            <!-- Public lobbies list -->
-            <div id="publicLobbiesSection" style="margin-bottom:12px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-weight:600;font-size:14px;">🌐 לובי פתוחים:</span>
-                    <button onclick="loadPublicLobbies()" style="background:none;border:none;cursor:pointer;font-size:20px;line-height:1;" title="רענן">🔄</button>
+                <div id="onlineCreateSection" class="lobby-section">
+                    <button class="lobby-btn-create" onclick="createOnlineGame()">➕ צור לובי חדש</button>
                 </div>
-                <div id="publicLobbiesList" style="font-size:13px;color:#7f8c8d;">טוען...</div>
-            </div>
 
-            <!-- Join by code section -->
-            <div id="onlineJoinSection">
-                <div style="font-size:13px;color:#7f8c8d;margin-bottom:6px;text-align:center;">— או הצטרף עם קוד —</div>
-                <div style="display:flex;gap:6px;">
-                    <input type="text" id="joinGameInput" placeholder="הכנס קוד לובי" maxlength="6" style="flex:1;padding:10px;font-size:15px;border:1px solid #ccc;border-radius:6px;">
-                    <button class="btn btn-primary" onclick="requestJoinGame()" style="padding:10px 16px;font-size:15px;flex-shrink:0;">הצטרף</button>
+                <div id="gameCodeDisplay" class="lobby-section" style="display:none;">
+                    <div class="lobby-code-label">קוד הלובי שלך</div>
+                    <div class="game-code" id="gameCode"></div>
+                    <div class="lobby-code-hint">שתף את הקוד עם השחקן השני</div>
+                    <div id="pendingRequests" class="lobby-pending" style="display:none;">
+                        <div class="lobby-pending-title">📩 בקשות הצטרפות:</div>
+                        <div id="pendingRequestsList"></div>
+                    </div>
                 </div>
-            </div>
 
-            <div id="playerIndicator" style="display: none;"></div>
-            <div id="waitingMessage" style="display: none;" class="waiting-message">
-                ממתין לשחקן שני...
-            </div>
-            <div id="approvalWaiting" style="display:none;" class="waiting-message">
-                ⏳ ממתין לאישור המארח...
+                <div id="publicLobbiesSection" class="lobby-section">
+                    <div class="lobby-section-header">
+                        <span class="lobby-section-label">לובי פתוחים</span>
+                        <button onclick="loadPublicLobbies()" class="lobby-refresh-btn" title="רענן">↻</button>
+                    </div>
+                    <div id="publicLobbiesList" class="lobby-list-empty">טוען...</div>
+                </div>
+
+                <div class="lobby-divider">— או הצטרף עם קוד —</div>
+
+                <div id="onlineJoinSection" class="lobby-section">
+                    <div class="lobby-join-row">
+                        <input type="text" id="joinGameInput" placeholder="קוד לובי" maxlength="6" class="lobby-code-input">
+                        <button class="lobby-btn-join" onclick="requestJoinGame()">הצטרף</button>
+                    </div>
+                </div>
+
+                <div id="playerIndicator" style="display:none;"></div>
+                <div id="waitingMessage" class="lobby-waiting" style="display:none;">⏳ ממתין לשחקן שני...</div>
+                <div id="approvalWaiting" class="lobby-waiting" style="display:none;">⏳ ממתין לאישור המארח...</div>
             </div>
         </div>
     </div>
