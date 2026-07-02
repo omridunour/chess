@@ -670,7 +670,7 @@
             .mobile-tabs { order: 2; flex-shrink: 0; margin-top: 8px; }
             .left-panels { order: 3; flex: 1; min-height: 0; overflow-y: auto; height: auto; border-left: none; }
             /* Board container: JS will set board size via width+height */
-            .board-container { height: auto; padding: 2px 8px 1px 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
+            .board-container { height: auto; padding: 2px 8px 1px 8px; gap: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 2px 10px; margin: 0; }
             /* Board sized by JS — coord label strips match desktop */
             .board-with-coords { max-width: 100%; grid-template-columns: 1fr 20px; grid-template-rows: 1fr 20px; }
@@ -4283,7 +4283,7 @@
                 if (!turnEl || !containerEl) return;
                 const turnBottom = turnEl.getBoundingClientRect().bottom;
                 const tabsH = tabsEl ? tabsEl.offsetHeight + 8 : 8;
-                const availH = viewH - turnBottom - tabsH - 2;
+                const availH = viewH - turnBottom - tabsH - 10; // -8 for gap between turn indicator and board
                 const availW = containerEl.clientWidth - 16;
                 const size = Math.max(50, Math.min(availH, availW));
                 boardEl.style.width = size + 'px';
