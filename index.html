@@ -681,6 +681,18 @@
             #onlineInviteRow { display: none !important; }
             #onlineControls { display: none !important; }
 
+            /* Online panel gets the same dark blue as the header */
+            #panel-online .side-panel {
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                color: white;
+            }
+            #panel-online .side-panel input {
+                background: rgba(255,255,255,0.15);
+                color: white;
+                border-color: rgba(255,255,255,0.3);
+            }
+            #panel-online .side-panel input::placeholder { color: rgba(255,255,255,0.6); }
+
             /* Online lobby on mobile: dark card so white text is visible */
             #onlineControls.online-lobby {
                 background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
