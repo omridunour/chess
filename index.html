@@ -3790,6 +3790,8 @@
                 resetGame();
                 playerColor = 'white';
             }
+
+            if (isMobile()) requestAnimationFrame(fitBoardToViewport);
         }
 
         function generateGameCode() {
