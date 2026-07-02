@@ -1556,9 +1556,16 @@
                 <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 <span class="btn-label">נגד </span>מחשב</button>
                 <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
             </div>
-            <!-- Online mode: compact red invite button shown right below mode buttons -->
+            <!-- Online mode: invite button + join section shown right below mode buttons -->
             <div id="onlineInviteRow" style="display:none; width:100%;">
-                <button class="btn btn-danger" onclick="createOnlineGame()" style="width:100%;">+ הזמן שחקן</button>
+                <button class="btn btn-danger" onclick="createOnlineGame()" style="width:100%; margin-bottom:6px;">+ הזמן שחקן</button>
+                <div class="lobby-divider" style="margin:4px 0;">— או הצטרף עם קוד —</div>
+                <div id="onlineJoinSection" class="lobby-section" style="padding:0;">
+                    <div class="lobby-join-row">
+                        <input type="text" id="joinGameInput" placeholder="הדבק קוד" maxlength="6" class="lobby-code-input">
+                        <button class="lobby-btn-join" onclick="requestJoinGame()">הצטרף</button>
+                    </div>
+                </div>
             </div>
             <!-- Computer Controls - sits between mode buttons and game controls -->
             <div class="online-controls" id="computerControls" style="display: none;">
@@ -1605,15 +1612,6 @@
                         <button onclick="loadPublicLobbies()" class="lobby-refresh-btn" title="רענן">↻</button>
                     </div>
                     <div id="publicLobbiesList" class="lobby-list-empty">טוען...</div>
-                </div>
-
-                <div class="lobby-divider">— או הצטרף עם קוד —</div>
-
-                <div id="onlineJoinSection" class="lobby-section">
-                    <div class="lobby-join-row">
-                        <input type="text" id="joinGameInput" placeholder="הדבק קוד" maxlength="6" class="lobby-code-input">
-                        <button class="lobby-btn-join" onclick="requestJoinGame()">הצטרף</button>
-                    </div>
                 </div>
 
                 <div id="playerIndicator" style="display:none;"></div>
