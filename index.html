@@ -677,6 +677,10 @@
             .coord-label { color: #5d6d7e; font-size: 9px; font-weight: 600; }
             .coach-panel { padding-left: 20px; padding-right: 20px; }
 
+            /* Online UI lives in panel on mobile — keep header compact */
+            #onlineInviteRow { display: none !important; }
+            #onlineControls { display: none !important; }
+
             /* Online lobby on mobile: dark card so white text is visible */
             #onlineControls.online-lobby {
                 background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -1627,6 +1631,7 @@
             <button class="mobile-tab active" onclick="switchMobileTab('coach', this)">🎓 מאמן</button>
             <button class="mobile-tab" onclick="switchMobileTab('analysis', this)">💡 ניתוח</button>
             <button class="mobile-tab" onclick="switchMobileTab('history', this)">📋 היסטוריה</button>
+            <button class="mobile-tab" id="mobileOnlineTab" style="display:none;" onclick="switchMobileTab('online', this)">🌐 מקוון</button>
         </div>
 
         <!-- Left - All Panels -->
@@ -1698,6 +1703,29 @@
                 </div>
             </div>
             </div><!-- end panel-history -->
+
+            <!-- Online Panel (mobile only) -->
+            <div class="mobile-panel" id="panel-online">
+            <div class="side-panel">
+                <div class="compact-section">
+                    <div id="mobileCreateSection">
+                        <button class="btn btn-danger" onclick="createOnlineGame()" style="width:100%; padding:12px; font-size:15px; margin-bottom:10px;">+ הזמן שחקן</button>
+                    </div>
+                    <div id="mobileCodeSection" style="display:none; text-align:center; margin-bottom:12px;">
+                        <div style="font-size:12px; color:#7f8c8d; margin-bottom:6px;">קוד הלובי שלך</div>
+                        <div id="mobileGameCode" onclick="copyGameCode(this)" title="לחץ להעתקה" style="cursor:pointer; font-size:22px; letter-spacing:4px; font-weight:800; color:#2c3e50; padding:10px; border:2px dashed #bdc3c7; border-radius:8px;"></div>
+                    </div>
+                    <div id="mobileJoinDivider" style="text-align:center; color:#95a5a6; font-size:12px; margin:8px 0;">— או הצטרף עם קוד —</div>
+                    <div id="mobileJoinRow" style="display:flex; gap:6px;">
+                        <input type="text" id="joinGameInputMobile" placeholder="הדבק קוד" maxlength="6"
+                               style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:14px; text-align:center; direction:ltr; box-sizing:border-box; outline:none; font-family:monospace; letter-spacing:2px;">
+                        <button onclick="requestJoinGame()" style="padding:10px 14px; background:#3498db; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">הצטרף</button>
+                    </div>
+                    <div id="mobileWaiting" style="display:none; text-align:center; padding:12px; background:#fef9e7; border-radius:8px; color:#e67e22; font-weight:600; margin-top:10px;">⏳ ממתין לשחקן שני...</div>
+                    <div id="mobileApproval" style="display:none; text-align:center; padding:12px; background:#fef9e7; border-radius:8px; color:#e67e22; font-weight:600; margin-top:10px;">⏳ ממתין לאישור המארח...</div>
+                </div>
+            </div>
+            </div><!-- end panel-online -->
         </div>
 
         <!-- Right - Board -->
@@ -3759,7 +3787,8 @@
         }
 
         function joinPublicLobby(code) {
-            document.getElementById('joinGameInput').value = code;
+            const inp = document.getElementById(isMobile() ? 'joinGameInputMobile' : 'joinGameInput');
+            if (inp) inp.value = code;
             requestJoinGame();
         }
 
@@ -3797,7 +3826,29 @@
                 resetGame();
             }
 
-            if (isMobile()) { initMobileLayout(); requestAnimationFrame(fitBoardToViewport); }
+            if (isMobile()) {
+                const moTab = document.getElementById('mobileOnlineTab');
+                if (mode === 'online') {
+                    if (moTab) moTab.style.display = '';
+                    initMobileLayout();
+                    if (moTab) switchMobileTab('online', moTab);
+                    resetMobileOnlinePanel();
+                } else {
+                    if (moTab) moTab.style.display = 'none';
+                    initMobileLayout();
+                }
+                requestAnimationFrame(fitBoardToViewport);
+            }
+        }
+
+        function resetMobileOnlinePanel() {
+            const els = {
+                mobileCreateSection: '', mobileCodeSection: 'none',
+                mobileJoinDivider: '', mobileWaiting: 'none', mobileApproval: 'none'
+            };
+            Object.entries(els).forEach(([id, v]) => { const e = document.getElementById(id); if (e) e.style.display = v; });
+            const jr = document.getElementById('mobileJoinRow'); if (jr) jr.style.display = 'flex';
+            const mi = document.getElementById('joinGameInputMobile'); if (mi) mi.value = '';
         }
 
         function generateGameCode() {
@@ -3846,6 +3897,14 @@
                 document.getElementById('publicLobbiesSection').style.display = 'none';
                 const _inv = document.getElementById('onlineInviteRow');
                 if (_inv) _inv.style.display = 'none';
+                if (isMobile()) {
+                    const mc = document.getElementById('mobileCreateSection'); if (mc) mc.style.display = 'none';
+                    const mcs = document.getElementById('mobileCodeSection'); if (mcs) mcs.style.display = 'block';
+                    const mgc = document.getElementById('mobileGameCode'); if (mgc) mgc.textContent = gameCode;
+                    const mjr = document.getElementById('mobileJoinRow'); if (mjr) mjr.style.display = 'none';
+                    const mjd = document.getElementById('mobileJoinDivider'); if (mjd) mjd.style.display = 'none';
+                    const mw = document.getElementById('mobileWaiting'); if (mw) mw.style.display = 'block';
+                }
                 document.getElementById('playerIndicator').style.display = 'block';
                 document.getElementById('playerIndicator').className = 'player-indicator player-white';
                 document.getElementById('playerIndicator').textContent = `אתה המארח — לבן ♔`;
@@ -3906,7 +3965,10 @@
             if (!database) { alert('Firebase לא זמין. אנא רענן את הדף.'); return; }
             if (!currentUser) { alert('יש להתחבר לפני הצטרפות למשחק מקוון.'); return; }
 
-            const gameCode = document.getElementById('joinGameInput').value.toUpperCase().trim();
+            const _joinEl = isMobile()
+                ? (document.getElementById('joinGameInputMobile') || document.getElementById('joinGameInput'))
+                : document.getElementById('joinGameInput');
+            const gameCode = (_joinEl ? _joinEl.value : '').toUpperCase().trim();
             if (!gameCode || gameCode.length !== 6) {
                 alert('אנא הכנס קוד לובי תקין (6 תווים)');
                 return;
@@ -3940,6 +4002,12 @@
                     document.getElementById('onlineCreateSection').style.display = 'none';
                     document.getElementById('onlineJoinSection').style.display = 'none';
                     document.getElementById('publicLobbiesSection').style.display = 'none';
+                    if (isMobile()) {
+                        const ma = document.getElementById('mobileApproval'); if (ma) ma.style.display = 'block';
+                        const mjr = document.getElementById('mobileJoinRow'); if (mjr) mjr.style.display = 'none';
+                        const mjd = document.getElementById('mobileJoinDivider'); if (mjd) mjd.style.display = 'none';
+                        const mc = document.getElementById('mobileCreateSection'); if (mc) mc.style.display = 'none';
+                    }
 
                     // Watch for approval/rejection
                     const reqRef = database.ref(`games/${gameCode}/requests/${currentUser.uid}/status`);
@@ -3954,6 +4022,8 @@
                             document.getElementById('playerIndicator').className = 'player-indicator player-black';
                             document.getElementById('playerIndicator').textContent = `אתה משחק כשחור ♚`;
                             document.getElementById('joinGameInput').value = '';
+                            const _mi = document.getElementById('joinGameInputMobile'); if (_mi) _mi.value = '';
+                            if (isMobile()) { const ma = document.getElementById('mobileApproval'); if (ma) ma.style.display = 'none'; }
 
                             gameRef = database.ref('games/' + gameCode);
                             gameRef.once('value').then(s => syncGameState(s.val()));
@@ -3964,6 +4034,7 @@
                             document.getElementById('onlineCreateSection').style.display = 'block';
                             document.getElementById('onlineJoinSection').style.display = 'block';
                             document.getElementById('publicLobbiesSection').style.display = 'block';
+                            if (isMobile()) resetMobileOnlinePanel();
                             loadPublicLobbies();
                             alert('הבקשה שלך נדחתה על ידי המארח.');
                             onlineGameId = null;
