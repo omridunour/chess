@@ -719,12 +719,12 @@
             }
             .mobile-tab.active { color: #3498db; border-bottom-color: #3498db; }
             .mobile-panel { display: none; }
-            .mobile-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-            .mobile-panel.active > * { flex: 1; overflow-y: auto; }
+            .mobile-panel.active { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+            .mobile-panel.active > * { overflow-y: visible; }
 
-            /* Flatten panel cards */
-            .coach-panel { border-radius: 0; margin: 0; }
-            .side-panel { border-radius: 0; box-shadow: none; border-top: 1px solid #ecf0f1; }
+            /* Flatten panel cards, clip at content height with rounded bottom */
+            .coach-panel { border-radius: 0 0 16px 16px; margin: 0; padding-bottom: 28px; }
+            .side-panel { border-radius: 0 0 16px 16px; box-shadow: none; border-top: 1px solid #ecf0f1; padding-bottom: 28px; }
         }
 
         /* ===== MOBILE ONLY (<700px) — single column, tighter sizing ===== */
