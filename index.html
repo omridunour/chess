@@ -4295,8 +4295,11 @@
             const tabs = document.getElementById('mobileTabs');
             if (isMobile()) {
                 tabs.style.display = 'flex';
-                // On mobile panels default: only coach active
-                document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('active'));
+                // Clear any inline display set by desktop mode so CSS media query can control visibility
+                document.querySelectorAll('.mobile-panel').forEach(p => {
+                    p.style.display = '';
+                    p.classList.remove('active');
+                });
                 document.getElementById('panel-coach').classList.add('active');
             } else {
                 tabs.style.display = 'none';
@@ -4313,8 +4316,11 @@
             document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
 
-            // Show correct panel
-            document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('active'));
+            // Show correct panel — clear any inline display so CSS can control it
+            document.querySelectorAll('.mobile-panel').forEach(p => {
+                p.style.display = '';
+                p.classList.remove('active');
+            });
             const target = document.getElementById('panel-' + tabName);
             if (target) target.classList.add('active');
         }
