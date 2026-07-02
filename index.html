@@ -3795,6 +3795,10 @@
                 playerColor = 'white';
             }
 
+            if (mode === 'online') {
+                resetGame();
+            }
+
             if (isMobile()) { initMobileLayout(); requestAnimationFrame(fitBoardToViewport); }
         }
 
