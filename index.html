@@ -668,7 +668,7 @@
             .container { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; grid-template-columns: unset; }
             .right-board { order: 1; flex-shrink: 0; height: auto; }
             .mobile-tabs { order: 2; flex-shrink: 0; margin-top: 8px; }
-            .left-panels { order: 3; flex: 1; min-height: 0; overflow: hidden; height: auto; border-left: none; display: flex; flex-direction: column; }
+            .left-panels { order: 3; flex: 1; min-height: 0; overflow: hidden; height: auto; border-left: none; display: flex; flex-direction: column; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
             /* Board container: JS will set board size via width+height */
             .board-container { height: auto; padding: 2px 8px 1px 8px; gap: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 2px 10px; margin: 0; }
@@ -692,6 +692,7 @@
                 border-color: rgba(255,255,255,0.3);
             }
             #panel-online .side-panel input::placeholder { color: rgba(255,255,255,0.6); }
+            #panel-online .side-panel { flex: none; padding-bottom: 28px; border-radius: 0 0 16px 16px; }
 
             /* Online lobby on mobile: dark card so white text is visible */
             #onlineControls.online-lobby {
