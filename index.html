@@ -668,7 +668,7 @@
             .container { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; grid-template-columns: unset; }
             .right-board { order: 1; flex-shrink: 0; height: auto; }
             .mobile-tabs { order: 2; flex-shrink: 0; margin-top: 8px; }
-            .left-panels { order: 3; flex: 1; min-height: 0; overflow-y: auto; height: auto; border-left: none; }
+            .left-panels { order: 3; flex: 1; min-height: 0; overflow-y: auto; height: auto; border-left: none; display: flex; flex-direction: column; }
             /* Board container: JS will set board size via width+height */
             .board-container { height: auto; padding: 2px 8px 1px 8px; gap: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-sizing: border-box; }
             .turn-indicator { font-size: 13px; padding: 2px 10px; margin: 0; }
@@ -706,7 +706,7 @@
             }
             .mobile-tab.active { color: #3498db; border-bottom-color: #3498db; }
             .mobile-panel { display: none; }
-            .mobile-panel.active { display: flex; flex-direction: column; min-height: 100%; }
+            .mobile-panel.active { display: flex; flex-direction: column; flex: 1; }
 
             /* Flatten panel cards */
             .coach-panel { border-radius: 0; margin: 0; }
