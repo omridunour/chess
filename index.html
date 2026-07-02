@@ -4331,6 +4331,20 @@
             window.visualViewport.addEventListener('resize', fitBoardToViewport);
         }
 
+        // Auto-resize board whenever header height changes (mode switch, auth, online state, etc.)
+        if (typeof ResizeObserver !== 'undefined') {
+            const headerEl = document.querySelector('.header');
+            if (headerEl) {
+                let roTimer;
+                new ResizeObserver(() => {
+                    clearTimeout(roTimer);
+                    roTimer = setTimeout(function() {
+                        if (isMobile()) requestAnimationFrame(fitBoardToViewport);
+                    }, 50);
+                }).observe(headerEl);
+            }
+        }
+
     </script>
 </body>
 </html>
