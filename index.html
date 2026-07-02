@@ -1556,6 +1556,10 @@
                 <button class="mode-btn" id="modeBtn-computer" onclick="setGameMode('computer', this)">🤖 <span class="btn-label">נגד </span>מחשב</button>
                 <button class="mode-btn" id="modeBtn-online" onclick="setGameMode('online', this)">🌐 מקוון</button>
             </div>
+            <!-- Online mode: compact red invite button shown right below mode buttons -->
+            <div id="onlineInviteRow" style="display:none; width:100%;">
+                <button class="btn btn-danger" onclick="createOnlineGame()" style="width:100%;">+ הזמן שחקן</button>
+            </div>
             <!-- Computer Controls - sits between mode buttons and game controls -->
             <div class="online-controls" id="computerControls" style="display: none;">
                 <label>רמה:
@@ -1571,7 +1575,7 @@
             <div class="header-row">
                 <!-- Game Controls -->
                 <button class="btn btn-secondary" onclick="undoMove()">↶ בטל מהלך</button>
-                <button class="btn btn-danger" onclick="resetGame()">🔄 משחק חדש</button>
+                <button class="btn btn-danger" id="newGameBtn" onclick="resetGame()">🔄 משחק חדש</button>
             </div>
         </div>
 
@@ -1584,9 +1588,7 @@
                     <p class="lobby-subtitle">צור לובי חדש או הצטרף למשחק קיים</p>
                 </div>
 
-                <div id="onlineCreateSection" class="lobby-section">
-                    <button class="lobby-btn-create" onclick="createOnlineGame()">הזמן שחקן</button>
-                </div>
+                <div id="onlineCreateSection" class="lobby-section" style="display:none;"></div>
 
                 <div id="gameCodeDisplay" class="lobby-section" style="display:none;">
                     <div class="lobby-code-label">קוד הלובי שלך</div>
@@ -3777,6 +3779,9 @@
 
             document.getElementById('onlineControls').style.display = mode === 'online' ? 'block' : 'none';
             document.getElementById('computerControls').style.display = mode === 'computer' ? 'flex' : 'none';
+            document.getElementById('newGameBtn').style.display = mode === 'online' ? 'none' : '';
+            const _invRow = document.getElementById('onlineInviteRow');
+            if (_invRow) _invRow.style.display = mode === 'online' ? 'block' : 'none';
             if (mode === 'online') loadPublicLobbies();
 
             if (mode !== 'online') {
@@ -3790,7 +3795,7 @@
                 playerColor = 'white';
             }
 
-            if (isMobile()) requestAnimationFrame(fitBoardToViewport);
+            if (isMobile()) { initMobileLayout(); requestAnimationFrame(fitBoardToViewport); }
         }
 
         function generateGameCode() {
@@ -3837,6 +3842,8 @@
                 document.getElementById('onlineJoinSection').style.display = 'none';
                 document.getElementById('onlineCreateSection').style.display = 'none';
                 document.getElementById('publicLobbiesSection').style.display = 'none';
+                const _inv = document.getElementById('onlineInviteRow');
+                if (_inv) _inv.style.display = 'none';
                 document.getElementById('playerIndicator').style.display = 'block';
                 document.getElementById('playerIndicator').className = 'player-indicator player-white';
                 document.getElementById('playerIndicator').textContent = `אתה המארח — לבן ♔`;
