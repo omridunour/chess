@@ -1717,7 +1717,7 @@
                 <div class="compact-section">
                     <h3>📜 היסטוריית מהלכים</h3>
                     <div class="move-history" id="moveHistory">
-                        <div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 16px;">אין מהלכים עדיין</div>
+                        <div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 28px;">אין מהלכים עדיין</div>
                     </div>
                 </div>
             </div>
@@ -3589,7 +3589,7 @@
         function updateMoveHistory() {
             const moveHistoryDiv = document.getElementById('moveHistory');
             if (moveHistory.length === 0) {
-                moveHistoryDiv.innerHTML = '<div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 16px;">אין מהלכים עדיין</div>';
+                moveHistoryDiv.innerHTML = '<div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 28px;">אין מהלכים עדיין</div>';
                 return;
             }
 
@@ -3622,7 +3622,7 @@
             }
 
             if (!html) {
-                moveHistoryDiv.innerHTML = '<div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 16px;">אין מהלכים עדיין</div>';
+                moveHistoryDiv.innerHTML = '<div style="color: #7f8c8d; width: 100%; text-align: center; grid-column: 1 / -1; padding-left: 24px; padding-right: 28px;">אין מהלכים עדיין</div>';
             } else {
                 moveHistoryDiv.innerHTML = html;
             }
