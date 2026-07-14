@@ -721,7 +721,8 @@
             .mobile-panel { display: none; }
             .mobile-panel.active { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
             .mobile-panel.active > * { overflow-y: visible; }
-            .move-history { max-height: none; overflow-y: visible; }
+            .move-history { max-height: none; overflow-y: visible; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; direction: ltr; }
+            .move-history .move-item { width: 100%; box-sizing: border-box; }
             .recommendations { max-height: none; overflow-y: visible; }
 
             /* Panel cards: blue gap above, rounded all corners */
