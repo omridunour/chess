@@ -3592,19 +3592,38 @@
             }
 
             let html = '';
-            for (let i = 0; i < moveHistory.length; i += 2) {
-                const moveNum = Math.floor(i / 2) + 1;
-                const whiteMove = moveHistory[i];
-                const blackMove = moveHistory[i + 1];
-                const whiteScore = formatMoveScore(moveScores[i]);
-                const blackScore = blackMove ? formatMoveScore(moveScores[i + 1]) : '';
-
-                html += `<div class="move-item">
-                    <span class="move-number">${moveNum}.</span>
-                    <span class="move-half">${whiteMove}${whiteScore}</span>${blackMove ? `<span class="move-half">${blackMove}${blackScore}</span>` : ''}
-                </div>`;
+            if (isMobile()) {
+                // Show only the relevant player's moves, one per grid cell
+                const showColor = gameMode === 'local' ? currentPlayer : (playerColor || 'white');
+                const startIdx = showColor === 'white' ? 0 : 1;
+                for (let i = startIdx; i < moveHistory.length; i += 2) {
+                    const moveNum = Math.floor(i / 2) + 1;
+                    const move = moveHistory[i];
+                    const score = formatMoveScore(moveScores[i]);
+                    html += `<div class="move-item">
+                        <span class="move-number">${moveNum}.</span>
+                        <span class="move-half">${move}${score}</span>
+                    </div>`;
+                }
+            } else {
+                for (let i = 0; i < moveHistory.length; i += 2) {
+                    const moveNum = Math.floor(i / 2) + 1;
+                    const whiteMove = moveHistory[i];
+                    const blackMove = moveHistory[i + 1];
+                    const whiteScore = formatMoveScore(moveScores[i]);
+                    const blackScore = blackMove ? formatMoveScore(moveScores[i + 1]) : '';
+                    html += `<div class="move-item">
+                        <span class="move-number">${moveNum}.</span>
+                        <span class="move-half">${whiteMove}${whiteScore}</span>${blackMove ? `<span class="move-half">${blackMove}${blackScore}</span>` : ''}
+                    </div>`;
+                }
             }
-            moveHistoryDiv.innerHTML = html;
+
+            if (!html) {
+                moveHistoryDiv.innerHTML = '<div style="color: #7f8c8d; width: 100%; text-align: center;">אין מהלכים עדיין</div>';
+            } else {
+                moveHistoryDiv.innerHTML = html;
+            }
         }
 
         function updateTurnIndicator() {
