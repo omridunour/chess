@@ -721,6 +721,8 @@
             .mobile-panel { display: none; }
             .mobile-panel.active { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
             .mobile-panel.active > * { overflow-y: visible; }
+            .move-history { max-height: none; overflow-y: visible; }
+            .recommendations { max-height: none; overflow-y: visible; }
 
             /* Panel cards: blue gap above, rounded all corners */
             .coach-panel { border-radius: 12px; margin: 10px 8px 0; padding-bottom: 28px; }
@@ -756,9 +758,9 @@
             .threat-list li, .opportunity-list li { font-size: 13px; padding: 6px; }
             .material-count { gap: 8px; }
             .material-white, .material-black { padding: 8px; font-size: 13px; }
-            .move-history { max-height: 160px; }
+            .move-history { max-height: none; overflow-y: visible; }
             .move-item { font-size: 12px; padding: 6px 9px; }
-            .recommendations { max-height: 180px; }
+            .recommendations { max-height: none; overflow-y: visible; }
             .recommendation-item { font-size: 13px; padding: 8px; }
             .online-controls { padding: 10px 12px; }
             .game-code { font-size: 22px; }
