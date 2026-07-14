@@ -3615,7 +3615,7 @@
             }
 
             let html = '';
-            const showColor = gameMode === 'local' ? currentPlayer : (playerColor || 'white');
+            const showColor = currentPlayer;
             const startIdx = showColor === 'white' ? 0 : 1;
             for (let i = startIdx; i < moveHistory.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
