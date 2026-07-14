@@ -572,6 +572,12 @@
             transform: scale(1.05);
         }
 
+        .move-piece {
+            font-size: 15px;
+            margin-right: 4px;
+            line-height: 1;
+        }
+
         .move-number {
             font-weight: bold;
             color: #7f8c8d;
@@ -3586,6 +3592,20 @@
             return '<span class="recommendation-score" style="font-size:10px;padding:1px 5px;margin-right:3px;">' + score + '</span>';
         }
 
+        function getMoveIcon(move, color) {
+            if (!move) return '';
+            const isWhite = color === 'white';
+            if (move.startsWith('O-O')) return isWhite ? '♔' : '♚';
+            switch (move[0]) {
+                case 'N': return isWhite ? '♘' : '♞';
+                case 'B': return isWhite ? '♗' : '♝';
+                case 'R': return isWhite ? '♖' : '♜';
+                case 'Q': return isWhite ? '♕' : '♛';
+                case 'K': return isWhite ? '♔' : '♚';
+                default:  return isWhite ? '♙' : '♟';
+            }
+        }
+
         function updateMoveHistory() {
             const moveHistoryDiv = document.getElementById('moveHistory');
             if (moveHistory.length === 0) {
@@ -3602,7 +3622,9 @@
                     const moveNum = Math.floor(i / 2) + 1;
                     const move = moveHistory[i];
                     const score = formatMoveScore(moveScores[i]);
+                    const icon = getMoveIcon(move, showColor);
                     html += `<div class="move-item">
+                        <span class="move-piece">${icon}</span>
                         <span class="move-number">${moveNum}.</span>
                         <span class="move-half">${move}${score}</span>
                     </div>`;
