@@ -3636,9 +3636,11 @@
                     const blackMove = moveHistory[i + 1];
                     const whiteScore = formatMoveScore(moveScores[i]);
                     const blackScore = blackMove ? formatMoveScore(moveScores[i + 1]) : '';
+                    const whiteIcon = getMoveIcon(whiteMove, 'white');
+                    const blackIcon = blackMove ? getMoveIcon(blackMove, 'black') : '';
                     html += `<div class="move-item">
                         <span class="move-number">${moveNum}.</span>
-                        <span class="move-half">${whiteMove}${whiteScore}</span>${blackMove ? `<span class="move-half">${blackMove}${blackScore}</span>` : ''}
+                        <span class="move-piece">${whiteIcon}</span><span class="move-half">${whiteMove}${whiteScore}</span>${blackMove ? `<span class="move-piece">${blackIcon}</span><span class="move-half">${blackMove}${blackScore}</span>` : ''}
                     </div>`;
                 }
             }
